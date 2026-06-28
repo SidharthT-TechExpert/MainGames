@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Number Grid Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'pop-in':    'popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            'shake':     'shake 0.4s ease-in-out',
+            'pulse-glow':'pulseGlow 1s ease-in-out infinite',
+            'fade-up':   'fadeUp 0.5s ease forwards',
+            'spin-slow':  'spin 3s linear infinite',
+          },
+          keyframes: {
+            popIn: {
+              '0%':   { transform: 'scale(0.5)', opacity: '0' },
+              '100%': { transform: 'scale(1)',   opacity: '1' },
+            },
+            shake: {
+              '0%,100%': { transform: 'translateX(0)' },
+              '20%':     { transform: 'translateX(-8px)' },
+              '40%':     { transform: 'translateX(8px)' },
+              '60%':     { transform: 'translateX(-5px)' },
+              '80%':     { transform: 'translateX(5px)' },
+            },
+            pulseGlow: {
+              '0%,100%': { boxShadow: '0 0 0px rgba(99,102,241,0)' },
+              '50%':     { boxShadow: '0 0 20px rgba(99,102,241,0.8)' },
+            },
+            fadeUp: {
+              '0%':   { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+    * { font-family: 'Poppins', sans-serif; }
+
+    body {
+      background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f0f1a 60%);
+      min-height: 100vh;
+    }
+
+    /* Animated background particles */
+    .bg-particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.15;
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 0.15; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(-100px) scale(1); opacity: 0; }
+    }
+
+    /* Cell styles */
+    .cell {
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+      user-select: none;
+    }
+    .cell:hover:not(.clicked) {
+      transform: scale(1.08);
+      z-index: 10;
+    }
+    .cell.clicked {
+      cursor: default;
+      pointer-events: none;
+    }
+    .cell.correct {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      color: white !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+    }
+    .cell.wrong {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      color: white !important;
+      animation: shake 0.4s ease-in-out;
+    }
+    .cell.missed {
+      background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+      color: white !important;
+      opacity: 0.7;
+    }
+
+    /* Timer ring */
+    .timer-ring-progress {
+      transition: stroke-dashoffset 1s linear;
+      transform-origin: center;
+      transform: rotate(-90deg);
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      transition: width 0.4s ease;
+    }
+
+    /* Overlay */
+    #overlay {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e1b4b; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 3px; }
+  </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-4 overflow-x-hidden">
+
+  <!-- Floating background particles -->
+  <div id="particles"></div>
+
+  <!-- Main Container -->
+  <div class="w-full max-w-lg animate-fade-up">
+
+    <!-- Header Card -->
+    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 mb-4 text-center shadow-2xl">
+      <div class="flex items-center justify-center gap-3 mb-1">
+        <span class="text-3xl">🎯</span>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">Number Rush</h1>
+      </div>
+      <p class="text-indigo-300 text-sm">Click numbers in order — as fast as you can!</p>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <!-- Timer -->
+      <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 text-center shadow-lg">
+        <p class="text-xs text-indigo-300 uppercase tracking-widest mb-1">Time</p>
+        <div class="relative inline-flex items-center justify-center">
+          <svg class="w-14 h-14" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(99,102,241,0.2)" stroke-width="4"/>
+            <circle id="timerRing" cx="28" cy="28" r="24" fill="none" stroke="#6366f1" stroke-width="4"
+              stroke-dasharray="150.8" stroke-dashoffset="0" class="timer-ring-progress" stroke-linecap="round"/>
+          </svg>
+          <span id="time" class="absolute text-xl font-bold text-white">30</span>
+        </div>
+      </div>
+
+      <!-- Score -->
+      <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 text-center shadow-lg">
+        <p class="text-xs text-indigo-300 uppercase tracking-widest mb-1">Score</p>
+        <p id="score" class="text-3xl font-extrabold text-white mt-2">0</p>
+      </div>
+
+      <!-- Next Target -->
+      <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 text-center shadow-lg">
+        <p class="text-xs text-indigo-300 uppercase tracking-widest mb-1">Next</p>
+        <p id="nextNum" class="text-3xl font-extrabold text-indigo-400 mt-2">1</p>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-3 mb-4 shadow">
+      <div class="flex justify-between text-xs text-indigo-300 mb-1">
+        <span>Progress</span>
+        <span id="progressText">0 / 25</span>
+      </div>
+      <div class="w-full bg-white/10 rounded-full h-2">
+        <div id="progressBar" class="progress-bar h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Grid Card -->
+    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-2xl">
+      <div id="grid" class="grid gap-2" style="grid-template-columns: repeat(5, 1fr);"></div>
+    </div>
+
+    <!-- Message -->
+    <div id="message" class="text-center mt-4 text-lg font-semibold text-transparent min-h-[2rem] transition-all duration-300"></div>
+
+  </div>
+
+  <!-- Game Over / Win Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+    <div id="overlayCard" class="bg-gradient-to-br from-[#1e1b4b] to-[#0f0f1a] border border-white/20 rounded-3xl p-8 text-center shadow-2xl max-w-sm w-full mx-4 animate-pop-in">
+      <div id="overlayEmoji" class="text-6xl mb-4">🏆</div>
+      <h2 id="overlayTitle" class="text-3xl font-extrabold text-white mb-2"></h2>
+      <p id="overlaySubtitle" class="text-indigo-300 mb-6"></p>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-white/10 rounded-2xl p-3">
+          <p class="text-xs text-indigo-300 mb-1">Score</p>
+          <p id="finalScore" class="text-2xl font-bold text-white">0</p>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-3">
+          <p class="text-xs text-indigo-300 mb-1">Best</p>
+          <p id="bestScore" class="text-2xl font-bold text-yellow-400">0</p>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-3">
+          <p class="text-xs text-indigo-300 mb-1">Correct</p>
+          <p id="finalCorrect" class="text-2xl font-bold text-green-400">0</p>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-3">
+          <p class="text-xs text-indigo-300 mb-1">Accuracy</p>
+          <p id="finalAccuracy" class="text-2xl font-bold text-purple-400">0%</p>
+        </div>
+      </div>
+
+      <button id="restartBtn"
+        class="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl text-lg shadow-lg transition-all duration-200 hover:scale-105 active:scale-95">
+        🔄 Play Again
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* ─── Particles ─────────────────────────────────── */
+    const particleContainer = document.getElementById('particles');
+    const colors = ['#6366f1','#8b5cf6','#a78bfa','#c4b5fd'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'bg-particle';
+      const size = Math.random() * 60 + 10;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}vw;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${Math.random()*12+8}s;
+        animation-delay:${Math.random()*10}s;
+      `;
+      particleContainer.appendChild(p);
+    }
+
+    /* ─── Game State ────────────────────────────────── */
+    const TOTAL        = 25;
+    const GAME_TIME    = 30;
+    const POINTS_HIT   = 10;
+    const POINTS_MISS  = -5;
+
+    let current     = 1;
+    let score       = 0;
+    let hits        = 0;
+    let attempts    = 0;
+    let timeLeft    = GAME_TIME;
+    let gameActive  = false;
+    let timerInterval;
+    let bestScore   = parseInt(localStorage.getItem('nrBest') || '0');
+
+    /* ─── DOM refs ──────────────────────────────────── */
+    const gridEl       = document.getElementById('grid');
+    const timeEl       = document.getElementById('time');
+    const scoreEl      = document.getElementById('score');
+    const nextEl       = document.getElementById('nextNum');
+    const messageEl    = document.getElementById('message');
+    const progressBar  = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const timerRing    = document.getElementById('timerRing');
+    const overlay      = document.getElementById('overlay');
+    const overlayEmoji = document.getElementById('overlayEmoji');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlaySub   = document.getElementById('overlaySubtitle');
+    const finalScore   = document.getElementById('finalScore');
+    const bestScoreEl  = document.getElementById('bestScore');
+    const finalCorrect = document.getElementById('finalCorrect');
+    const finalAccuracy= document.getElementById('finalAccuracy');
+    const restartBtn   = document.getElementById('restartBtn');
+
+    const CIRCUMFERENCE = 2 * Math.PI * 24; // ≈ 150.8
+
+    /* ─── Utilities ─────────────────────────────────── */
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateTimerRing() {
+      const offset = CIRCUMFERENCE * (1 - timeLeft / GAME_TIME);
+      timerRing.style.strokeDashoffset = offset;
+      // Color shift: green → yellow → red
+      if (timeLeft > 15)      timerRing.style.stroke = '#6366f1';
+      else if (timeLeft > 8)  timerRing.style.stroke = '#f59e0b';
+      else                    timerRing.style.stroke = '#ef4444';
+      if (timeLeft <= 5) timeEl.classList.add('text-red-400');
+      else               timeEl.classList.remove('text-red-400');
+    }
+
+    function updateProgress() {
+      const pct = ((hits) / TOTAL) * 100;
+      progressBar.style.width = pct + '%';
+      progressText.textContent = `${hits} / ${TOTAL}`;
+    }
+
+    function flashMessage(text, color) {
+      messageEl.textContent = text;
+      messageEl.style.color = color;
+      messageEl.style.opacity = '1';
+      clearTimeout(messageEl._timeout);
+      messageEl._timeout = setTimeout(() => {
+        messageEl.style.opacity = '0';
+      }, 1200);
+    }
+
+    /* ─── Grid ──────────────────────────────────────── */
+    function createGrid() {
+      gridEl.innerHTML = '';
+      const numbers = shuffle([...Array(TOTAL)].map((_, i) => i + 1));
+
+      numbers.forEach((num, idx) => {
+        const cell = document.createElement('div');
+        cell.className = `cell flex items-center justify-center rounded-xl text-lg font-bold
+          bg-white/10 border border-white/20 text-white aspect-square
+          hover:bg-indigo-500/40 hover:border-indigo-400 animate-pop-in`;
+        cell.style.animationDelay = `${idx * 0.025}s`;
+        cell.dataset.num = num;
+        cell.textContent = num;
+
+        cell.addEventListener('click', () => handleClick(cell, num));
+        gridEl.appendChild(cell);
+      });
+
+      gameActive = true;
+    }
+
+    /* ─── Click Handler ─────────────────────────────── */
+    function handleClick(cell, num) {
+      if (!gameActive) return;
+      attempts++;
+
+      if (num === current) {
+        // Correct
+        hits++;
+        score += POINTS_HIT;
+        scoreEl.textContent = score;
+        cell.classList.add('clicked', 'correct');
+        cell.classList.remove('hover:bg-indigo-500/40');
+        updateProgress();
+
+        if (hits === TOTAL) {
+          // Win!
+          endGame(true);
+          return;
+        }
+
+        current++;
+        nextEl.textContent = current;
+        flashMessage(`✅ +${POINTS_HIT}`, '#10b981');
+      } else {
+        // Wrong
+        score = Math.max(0, score + POINTS_MISS);
+        scoreEl.textContent = score;
+        cell.classList.add('wrong');
+        setTimeout(() => cell.classList.remove('wrong'), 400);
+        flashMessage(`❌ ${POINTS_MISS}`, '#ef4444');
+      }
+    }
+
+    /* ─── Timer ─────────────────────────────────────── */
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timeEl.textContent = timeLeft;
+        updateTimerRing();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endGame(false);
+        }
+      }, 1000);
+    }
+
+    /* ─── End Game ──────────────────────────────────── */
+    function endGame(won) {
+      gameActive = false;
+      clearInterval(timerInterval);
+
+      // Mark unmissed cells
+      if (!won) {
+        document.querySelectorAll('.cell:not(.clicked)').forEach(c => {
+          if (parseInt(c.dataset.num) < current + 3) {
+            c.classList.add('missed');
+          }
+        });
+      }
+
+      // Best score
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('nrBest', bestScore);
+      }
+
+      // Accuracy
+      const acc = attempts > 0 ? Math.round((hits / attempts) * 100) : 0;
+
+      // Populate overlay
+      overlayEmoji.textContent = won ? '🏆' : (score >= 150 ? '😎' : score >= 80 ? '🙂' : '😬');
+      overlayTitle.textContent = won ? 'You Win!' : "Time's Up!";
+      overlaySub.textContent   = won
+        ? 'Amazing! You nailed all 25 numbers!'
+        : `You reached ${current - 1} out of 25. Keep going!`;
+      finalScore.textContent   = score;
+      bestScoreEl.textContent  = bestScore;
+      finalCorrect.textContent = hits;
+      finalAccuracy.textContent= acc + '%';
+
+      setTimeout(() => overlay.classList.remove('hidden'), 500);
+    }
+
+    /* ─── Restart ───────────────────────────────────── */
+    function initGame() {
+      current    = 1;
+      score      = 0;
+      hits       = 0;
+      attempts   = 0;
+      timeLeft   = GAME_TIME;
+
+      scoreEl.textContent = '0';
+      nextEl.textContent  = '1';
+      timeEl.textContent  = GAME_TIME;
+      messageEl.textContent = '';
+      messageEl.style.opacity = '1';
+
+      updateTimerRing();
+      updateProgress();
+      overlay.classList.add('hidden');
+      createGrid();
+      startTimer();
+    }
+
+    restartBtn.addEventListener('click', initGame);
+
+    /* ─── Init ──────────────────────────────────────── */
+    initGame();
+  </script>
+</body>
+</html>
