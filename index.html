@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindForge — Ultimate Brain & Cognitive Games Hub</title>
+  <meta name="description" content="Train your brain with speed, memory, focus, and math games. Play Number Rush, Memory Matrix, Color Clash, and Speed Math online for free!" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          screens: { xs: '400px' },
+          animation: {
+            'pop-in':     'popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards',
+            'pop-out':    'popOut 0.3s ease forwards',
+            'shake':      'shake 0.45s ease-in-out',
+            'fade-up':    'fadeUp 0.5s ease forwards',
+            'fade-in':    'fadeIn 0.3s ease forwards',
+            'bounce-in':  'bounceIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards',
+            'slide-left': 'slideLeft 0.4s ease forwards',
+            'slide-right':'slideRight 0.4s ease forwards',
+            'glow-pulse': 'glowPulse 1.5s ease-in-out infinite',
+            'float-up':   'floatUp linear infinite',
+            'streak':     'streakIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards',
+            'pulse-subtle': 'pulseSubtle 2s infinite',
+          },
+          keyframes: {
+            popIn:  { '0%':{ transform:'scale(0.4) rotate(-5deg)', opacity:'0' }, '100%':{ transform:'scale(1) rotate(0deg)', opacity:'1' } },
+            popOut: { '0%':{ transform:'scale(1)', opacity:'1' }, '100%':{ transform:'scale(0)', opacity:'0' } },
+            shake:  { '0%,100%':{ transform:'translateX(0)' }, '20%':{ transform:'translateX(-8px)' }, '40%':{ transform:'translateX(8px)' }, '60%':{ transform:'translateX(-5px)' }, '80%':{ transform:'translateX(5px)' } },
+            fadeUp: { '0%':{ opacity:'0', transform:'translateY(20px)' }, '100%':{ opacity:'1', transform:'translateY(0)' } },
+            fadeIn: { '0%':{ opacity:'0' }, '100%':{ opacity:'1' } },
+            bounceIn:{ '0%':{ transform:'scale(0)', opacity:'0' }, '60%':{ transform:'scale(1.1)', opacity:'1' }, '100%':{ transform:'scale(1)' } },
+            slideLeft:{ '0%':{ transform:'translateX(40px)', opacity:'0' }, '100%':{ transform:'translateX(0)', opacity:'1' } },
+            slideRight:{ '0%':{ transform:'translateX(-40px)', opacity:'0' }, '100%':{ transform:'translateX(0)', opacity:'1' } },
+            glowPulse:{ '0%,100%':{ boxShadow:'0 0 5px rgba(99,102,241,0.4)' }, '50%':{ boxShadow:'0 0 25px rgba(99,102,241,0.9), 0 0 40px rgba(139,92,246,0.5)' } },
+            floatUp:{ '0%':{ transform:'translateY(110vh) scale(0.2)', opacity:'0' }, '10%':{ opacity:'0.25' }, '90%':{ opacity:'0.15' }, '100%':{ transform:'translateY(-10vh) scale(1.1)', opacity:'0' } },
+            streakIn:{ '0%':{ transform:'translateY(-15px) scale(0.6)', opacity:'0' }, '100%':{ transform:'translateY(0) scale(1)', opacity:'1' } },
+            pulseSubtle: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.6' } }
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    *, *::before, *::after { font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+
+    body {
+      background: #070714;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 20% 0%, rgba(99,102,241,0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139,92,246,0.18) 0%, transparent 55%),
+        radial-gradient(circle at 50% 50%, rgba(15, 12, 41, 0.5) 0%, rgba(7, 7, 20, 1) 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .bg-particle {
+      position: fixed; border-radius: 50%; pointer-events: none;
+      animation: floatUp linear infinite; z-index: 0;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .glass-bright {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .cell {
+      cursor: pointer; user-select: none; position: relative; overflow: hidden;
+      transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .cell:hover:not(.used) { transform: scale(1.08) translateY(-2px); z-index: 10; }
+    .cell:active:not(.used) { transform: scale(0.94); }
+    .cell.used { cursor: default; pointer-events: none; }
+
+    .cell.correct {
+      background: linear-gradient(135deg, #059669, #10b981) !important;
+      border-color: rgba(16,185,129,0.7) !important;
+      box-shadow: 0 0 0 2px rgba(16,185,129,0.4), 0 4px 20px rgba(16,185,129,0.5) !important;
+      color: #fff !important;
+    }
+    .cell.wrong {
+      background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+      border-color: rgba(239,68,68,0.7) !important;
+      box-shadow: 0 0 0 2px rgba(239,68,68,0.4), 0 4px 20px rgba(239,68,68,0.5) !important;
+      color: #fff !important;
+      animation: shake 0.45s ease-in-out;
+    }
+    .cell.next-hint {
+      border-color: rgba(129, 140, 248, 0.9) !important;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.5), 0 0 25px rgba(99,102,241,0.7) !important;
+      animation: glowPulse 1.2s ease-in-out infinite;
+    }
+
+    /* Memory Matrix Active pattern tile */
+    .cell.active-pattern {
+      background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6) !important;
+      border-color: rgba(192, 132, 252, 0.8) !important;
+    }
+
+    .ring-track { transition: stroke-dashoffset 0.8s linear; transform-origin: center; transform: rotate(-90deg); }
+    .pbar { transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+
+    .combo-badge {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      animation: streakIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+    }
+
+    .diff-btn.active {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-color: rgba(139,92,246,0.6);
+      color: #fff;
+      box-shadow: 0 0 16px rgba(99,102,241,0.4);
+    }
+
+    .game-tab.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: rgba(129, 140, 248, 0.6);
+      color: #fff;
+    }
+
+    #overlay { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(99,102,241,0.05); }
+    ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 4px; }
+
+    @keyframes floatScoreAnim {
+      0%  { transform: translateY(0) scale(1); opacity: 1; }
+      100%{ transform: translateY(-45px) scale(1.25); opacity: 0; }
+    }
+    .float-score-item { animation: floatScoreAnim 0.8s ease forwards; pointer-events: none; position: absolute; font-weight: 800; z-index: 30; }
+
+    /* Toast alert */
+    #toast {
+      transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden relative">
+
+  <!-- Background particles -->
+  <div id="particles" class="pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 pointer-events-none glass-bright px-5 py-3 rounded-2xl flex items-center gap-3 shadow-2xl border border-indigo-500/30">
+    <span id="toastIcon" class="text-xl">✨</span>
+    <span id="toastMsg" class="text-sm font-semibold text-white">Notification</span>
+  </div>
+
+  <!-- Top Navbar -->
+  <nav class="fixed top-0 inset-x-0 z-40 glass border-b border-white/10 px-4 py-2.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <!-- Logo -->
+      <a href="#" onclick="switchGame('number-rush'); return false;" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-lg font-black shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform">
+          ⚡
+        </div>
+        <div>
+          <span class="font-extrabold text-white text-lg tracking-tight block leading-tight">MindForge</span>
+          <span class="text-[10px] text-indigo-300 font-medium tracking-wider uppercase block">Brain Gym</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Game Selector Tabs (Desktop) -->
+    <div class="hidden md:flex items-center gap-1.5 glass rounded-2xl p-1 border border-white/10">
+      <button onclick="switchGame('number-rush')" id="tab-number-rush" class="game-tab active px-3 py-1.5 rounded-xl text-xs font-semibold border border-transparent text-white/70 hover:text-white transition-all flex items-center gap-1.5">
+        🔢 Number Rush
+      </button>
+      <button onclick="switchGame('memory-matrix')" id="tab-memory-matrix" class="game-tab px-3 py-1.5 rounded-xl text-xs font-semibold border border-transparent text-white/70 hover:text-white transition-all flex items-center gap-1.5">
+        🧩 Memory Matrix
+      </button>
+      <button onclick="switchGame('color-clash')" id="tab-color-clash" class="game-tab px-3 py-1.5 rounded-xl text-xs font-semibold border border-transparent text-white/70 hover:text-white transition-all flex items-center gap-1.5">
+        🎨 Color Clash
+      </button>
+      <button onclick="switchGame('speed-math')" id="tab-speed-math" class="game-tab px-3 py-1.5 rounded-xl text-xs font-semibold border border-transparent text-white/70 hover:text-white transition-all flex items-center gap-1.5">
+        ⚡ Speed Math
+      </button>
+      <button onclick="switchGame('sequence-recall')" id="tab-sequence-recall" class="game-tab px-3 py-1.5 rounded-xl text-xs font-semibold border border-transparent text-white/70 hover:text-white transition-all flex items-center gap-1.5">
+        🎵 Simon Recall
+      </button>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Hint toggle -->
+      <button id="hintToggle" title="Toggle Hint Highlight"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs text-indigo-300 hover:text-white border border-white/10 hover:border-indigo-400/50 transition-all">
+        💡 <span class="hidden sm:inline">Hint</span>
+        <span id="hintStatus" class="w-3.5 h-3.5 rounded-full bg-indigo-500 border-2 border-indigo-300 inline-block"></span>
+      </button>
+
+      <!-- Sound toggle -->
+      <button id="soundToggle" title="Toggle Sound FX"
+        class="w-9 h-9 rounded-xl glass text-indigo-300 hover:text-white border border-white/10 hover:border-indigo-400/50 transition-all flex items-center justify-center text-base">
+        🔊
+      </button>
+
+      <!-- Global Brain Rank -->
+      <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass border border-yellow-500/30 text-yellow-400 text-xs font-bold shadow-sm" title="Global Best Score">
+        🏆 <span id="navBest">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Game Switcher Bar -->
+  <div class="md:hidden pt-16 px-3">
+    <div class="flex gap-1 overflow-x-auto pb-2 pt-2 scrollbar-none text-xs">
+      <button onclick="switchGame('number-rush')" id="mob-tab-number-rush" class="game-tab active shrink-0 px-3 py-1.5 rounded-xl glass border border-white/10 text-white font-semibold">🔢 Number Rush</button>
+      <button onclick="switchGame('memory-matrix')" id="mob-tab-memory-matrix" class="game-tab shrink-0 px-3 py-1.5 rounded-xl glass border border-white/10 text-white/70 font-semibold">🧩 Memory Matrix</button>
+      <button onclick="switchGame('color-clash')" id="mob-tab-color-clash" class="game-tab shrink-0 px-3 py-1.5 rounded-xl glass border border-white/10 text-white/70 font-semibold">🎨 Color Clash</button>
+      <button onclick="switchGame('speed-math')" id="mob-tab-speed-math" class="game-tab shrink-0 px-3 py-1.5 rounded-xl glass border border-white/10 text-white/70 font-semibold">⚡ Speed Math</button>
+      <button onclick="switchGame('sequence-recall')" id="mob-tab-sequence-recall" class="game-tab shrink-0 px-3 py-1.5 rounded-xl glass border border-white/10 text-white/70 font-semibold">🎵 Simon Recall</button>
+    </div>
+  </div>
+
+  <!-- Page Layout -->
+  <div class="flex min-h-screen pt-2 md:pt-16">
+
+    <!-- ════ LEFT SIDEBAR ════ -->
+    <aside id="sidebar" class="hidden lg:flex flex-col w-64 xl:w-72 shrink-0 p-4 gap-4 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto z-10">
+
+      <!-- How to play (Dynamic per game) -->
+      <div class="glass rounded-2xl p-5 animate-slide-right">
+        <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-3 flex items-center justify-between">
+          <span>How to Play</span>
+          <span id="activeGameBadge" class="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px]">Number Rush</span>
+        </h3>
+        <ul id="instructionsList" class="space-y-2.5 text-xs text-white/80">
+          <li class="flex items-start gap-2"><span class="text-indigo-400 font-bold">①</span> Click numbers 1 → 25 in order</li>
+          <li class="flex items-start gap-2"><span class="text-green-400 font-bold">②</span> +10 pts for each correct click</li>
+          <li class="flex items-start gap-2"><span class="text-red-400 font-bold">③</span> −5 pts for wrong clicks</li>
+          <li class="flex items-start gap-2"><span class="text-yellow-400 font-bold">④</span> Build combos for multiplier bonuses!</li>
+          <li class="flex items-start gap-2"><span class="text-purple-400 font-bold">⑤</span> Finish before time runs out</li>
+        </ul>
+      </div>
+
+      <!-- Difficulty Selector -->
+      <div id="diffBox" class="glass rounded-2xl p-5 animate-slide-right" style="animation-delay:0.1s">
+        <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-3">Difficulty</h3>
+        <div class="flex flex-col gap-2">
+          <button class="diff-btn active rounded-xl px-4 py-2.5 text-xs font-semibold border border-white/10 text-white/60 hover:text-white transition-all text-left" data-time="30" data-label="Easy">
+            🟢 Easy — 30s
+          </button>
+          <button class="diff-btn rounded-xl px-4 py-2.5 text-xs font-semibold border border-white/10 text-white/60 hover:text-white transition-all text-left" data-time="20" data-label="Medium">
+            🟡 Medium — 20s
+          </button>
+          <button class="diff-btn rounded-xl px-4 py-2.5 text-xs font-semibold border border-white/10 text-white/60 hover:text-white transition-all text-left" data-time="12" data-label="Hard">
+            🔴 Hard — 12s
+          </button>
+        </div>
+      </div>
+
+      <!-- Session Stats -->
+      <div class="glass rounded-2xl p-5 animate-slide-right" style="animation-delay:0.2s">
+        <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-3">Session Stats</h3>
+        <div class="grid grid-cols-2 gap-2 text-center">
+          <div class="glass-bright rounded-xl p-2.5">
+            <p class="text-base font-bold text-white" id="sessGames">0</p>
+            <p class="text-[10px] text-white/50 uppercase tracking-wider">Games</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2.5">
+            <p class="text-base font-bold text-yellow-400" id="sessBest">0</p>
+            <p class="text-[10px] text-white/50 uppercase tracking-wider">Best</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2.5">
+            <p class="text-base font-bold text-green-400" id="sessAvg">0</p>
+            <p class="text-[10px] text-white/50 uppercase tracking-wider">Avg Score</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2.5">
+            <p class="text-base font-bold text-purple-400" id="sessAcc">0%</p>
+            <p class="text-[10px] text-white/50 uppercase tracking-wider">Accuracy</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ════ CENTER CONTENT AREA ════ -->
+    <main class="flex-1 flex flex-col items-center justify-start px-3 sm:px-5 py-4 gap-4 max-w-xl mx-auto w-full animate-fade-up z-10">
+
+      <!-- Mobile difficulty selection -->
+      <div id="diffBoxMob" class="w-full flex gap-2 lg:hidden">
+        <button class="diff-btn active flex-1 rounded-xl px-2 py-2 text-xs font-semibold border border-white/10 text-white/70 hover:text-white transition-all glass" data-time="30" data-label="Easy">🟢 Easy</button>
+        <button class="diff-btn flex-1 rounded-xl px-2 py-2 text-xs font-semibold border border-white/10 text-white/70 hover:text-white transition-all glass" data-time="20" data-label="Medium">🟡 Medium</button>
+        <button class="diff-btn flex-1 rounded-xl px-2 py-2 text-xs font-semibold border border-white/10 text-white/70 hover:text-white transition-all glass" data-time="12" data-label="Hard">🔴 Hard</button>
+      </div>
+
+      <!-- Stats Top Header Row -->
+      <div class="w-full grid grid-cols-3 gap-2 sm:gap-3">
+
+        <!-- Timer -->
+        <div class="glass rounded-2xl p-3 flex flex-col items-center gap-1 shadow-xl">
+          <p class="text-[10px] sm:text-xs text-indigo-300 uppercase tracking-widest font-semibold">Time</p>
+          <div class="relative flex items-center justify-center">
+            <svg class="w-12 h-12 sm:w-14 sm:h-14" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(99,102,241,0.15)" stroke-width="5"/>
+              <circle id="timerRing" cx="32" cy="32" r="27" fill="none" stroke="#6366f1" stroke-width="5"
+                stroke-dasharray="169.6" stroke-dashoffset="0" stroke-linecap="round" class="ring-track"/>
+            </svg>
+            <span id="time" class="absolute text-lg sm:text-xl font-extrabold text-white tabular-nums">30</span>
+          </div>
+        </div>
+
+        <!-- Score & Combo -->
+        <div class="glass rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-xl relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-purple-600/5 pointer-events-none"></div>
+          <p class="text-[10px] sm:text-xs text-indigo-300 uppercase tracking-widest font-semibold">Score</p>
+          <p id="score" class="text-2xl sm:text-3xl font-black text-white tabular-nums">0</p>
+          <!-- Combo Badge -->
+          <div id="comboBadge" class="hidden combo-badge text-[10px] font-bold text-white px-2 py-0.5 rounded-full">
+            🔥 x<span id="comboCount">2</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Target / Round Info -->
+        <div class="glass rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-xl">
+          <p id="targetLabel" class="text-[10px] sm:text-xs text-indigo-300 uppercase tracking-widest font-semibold">Next</p>
+          <p id="nextNum" class="text-2xl sm:text-3xl font-black text-indigo-400 tabular-nums">1</p>
+          <p id="targetSub" class="text-[10px] text-white/40">tap in order</p>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div id="progressContainer" class="w-full glass rounded-xl p-3 shadow">
+        <div class="flex justify-between items-center text-xs text-indigo-300 mb-1.5 font-medium">
+          <span class="flex items-center gap-1.5">
+            <span id="diffLabel" class="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase tracking-wider">Easy</span>
+            Progress
+          </span>
+          <span id="progressText" class="tabular-nums font-semibold">0 / 25</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
+          <div id="progressBar" class="pbar h-2.5 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- GAME BOARD CONTAINER -->
+      <div class="w-full glass rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-2xl relative min-h-[300px] flex items-center justify-center overflow-hidden">
+        <!-- Floating score elements spawn here -->
+        <div id="boardContainer" class="w-full h-full flex flex-col items-center justify-center">
+          
+          <!-- Game 1: Number Rush Grid -->
+          <div id="game-number-rush" class="game-view w-full grid gap-2" style="grid-template-columns:repeat(5,1fr)"></div>
+
+          <!-- Game 2: Memory Matrix -->
+          <div id="game-memory-matrix" class="game-view hidden w-full flex flex-col items-center gap-3">
+            <p id="matrixStatus" class="text-sm font-semibold text-indigo-300">Watch the pattern carefully...</p>
+            <div id="matrixGrid" class="grid gap-2 w-full max-w-sm aspect-square"></div>
+          </div>
+
+          <!-- Game 3: Color Clash -->
+          <div id="game-color-clash" class="game-view hidden w-full flex flex-col items-center justify-center gap-6 py-6">
+            <div class="text-center">
+              <p class="text-xs uppercase tracking-widest text-white/50 mb-2">Does the text match the color?</p>
+              <div id="stroopWord" class="text-4xl sm:text-5xl font-black tracking-wider drop-shadow-md py-4 select-none">RED</div>
+            </div>
+            <div class="flex gap-4 w-full max-w-xs">
+              <button onclick="handleColorClash(true)" class="flex-1 py-3 bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/50 text-emerald-300 font-bold rounded-2xl text-lg transition-all active:scale-95 shadow-lg">
+                ✅ YES
+              </button>
+              <button onclick="handleColorClash(false)" class="flex-1 py-3 bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/50 text-rose-300 font-bold rounded-2xl text-lg transition-all active:scale-95 shadow-lg">
+                ❌ NO
+              </button>
+            </div>
+          </div>
+
+          <!-- Game 4: Speed Math -->
+          <div id="game-speed-math" class="game-view hidden w-full flex flex-col items-center justify-center gap-6 py-4">
+            <div class="text-center glass-bright px-8 py-4 rounded-2xl border border-indigo-500/30">
+              <p class="text-xs uppercase tracking-widest text-indigo-300 mb-1">Solve Fast</p>
+              <div id="mathEquation" class="text-3xl sm:text-4xl font-black tracking-wider text-white">12 + 15</div>
+            </div>
+            <div id="mathOptions" class="grid grid-cols-2 gap-3 w-full max-w-sm"></div>
+          </div>
+
+          <!-- Game 5: Sequence Recall -->
+          <div id="game-sequence-recall" class="game-view hidden w-full flex flex-col items-center justify-center gap-4">
+            <p id="sequenceStatus" class="text-sm font-semibold text-indigo-300">Listen to the sequence...</p>
+            <div class="grid grid-cols-2 gap-3 w-64 h-64">
+              <button id="simon-0" onclick="handleSimonClick(0)" class="rounded-2xl bg-rose-500/30 border-2 border-rose-500/50 hover:bg-rose-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-2xl font-bold">🔴</button>
+              <button id="simon-1" onclick="handleSimonClick(1)" class="rounded-2xl bg-indigo-500/30 border-2 border-indigo-500/50 hover:bg-indigo-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-2xl font-bold">🔵</button>
+              <button id="simon-2" onclick="handleSimonClick(2)" class="rounded-2xl bg-amber-500/30 border-2 border-amber-500/50 hover:bg-amber-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-2xl font-bold">🟡</button>
+              <button id="simon-3" onclick="handleSimonClick(3)" class="rounded-2xl bg-emerald-500/30 border-2 border-emerald-500/50 hover:bg-emerald-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-2xl font-bold">🟢</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Feedback message line -->
+      <div id="message" class="w-full text-center text-sm font-bold min-h-[24px] transition-all duration-300 opacity-0"></div>
+
+    </main>
+
+    <!-- ════ RIGHT SIDEBAR ════ -->
+    <aside class="hidden xl:flex flex-col w-64 shrink-0 p-4 gap-4 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto z-10">
+
+      <!-- Recent Games History -->
+      <div class="glass rounded-2xl p-5 animate-slide-left">
+        <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-3">Recent Games</h3>
+        <div id="recentGames" class="space-y-2 text-xs">
+          <p class="text-white/30 text-xs">No games played yet...</p>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="glass rounded-2xl p-5 animate-slide-left" style="animation-delay:0.1s">
+        <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-3">Achievements</h3>
+        <div id="achievements" class="grid grid-cols-3 gap-2 text-center">
+          <div class="glass-bright rounded-xl p-2 opacity-30 transition-all" id="ach-first" title="First Win — Win your 1st game">
+            <div class="text-xl">🏆</div><p class="text-[10px] mt-0.5 text-white/70 font-medium">First Win</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2 opacity-30 transition-all" id="ach-speed" title="Speed Demon — Finish in under 15s">
+            <div class="text-xl">⚡</div><p class="text-[10px] mt-0.5 text-white/70 font-medium">Speed</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2 opacity-30 transition-all" id="ach-perfect" title="Perfect — 100% Accuracy">
+            <div class="text-xl">🎯</div><p class="text-[10px] mt-0.5 text-white/70 font-medium">Perfect</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2 opacity-30 transition-all" id="ach-combo" title="Combo Master — Reach 5x combo">
+            <div class="text-xl">🔥</div><p class="text-[10px] mt-0.5 text-white/70 font-medium">Combo</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2 opacity-30 transition-all" id="ach-veteran" title="Veteran — Play 10 games">
+            <div class="text-xl">🎖️</div><p class="text-[10px] mt-0.5 text-white/70 font-medium">Veteran</p>
+          </div>
+          <div class="glass-bright rounded-xl p-2 opacity-30 transition-all" id="ach-hard" title="Hardcore — Win on Hard difficulty">
+            <div class="text-xl">💪</div><p class="text-[10px] mt-0.5 text-white/70 font-medium">Hardcore</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro Tips -->
+      <div class="glass rounded-2xl p-5 animate-slide-left" style="animation-delay:0.2s">
+        <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-2">💡 Pro Tip</h3>
+        <div id="tipText" class="text-xs text-white/70 leading-relaxed font-normal">
+          Use peripheral vision to spot numbers ahead of time while clicking the current target!
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ════ GAME OVER / RESULTS OVERLAY ════ -->
+  <div id="overlay" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden px-4">
+    <div class="bg-gradient-to-br from-[#12103a] via-[#1a1740] to-[#0d0c20] border border-white/20 rounded-3xl p-6 sm:p-8 text-center shadow-2xl w-full max-w-sm animate-bounce-in relative overflow-hidden">
+      
+      <!-- Shimmer background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-pink-500/10 pointer-events-none"></div>
+
+      <div id="overlayEmoji" class="text-5xl sm:text-6xl mb-2 relative">🏆</div>
+      <h2 id="overlayTitle" class="text-2xl sm:text-3xl font-black text-white mb-1 relative">You Win!</h2>
+      <p id="overlaySubtitle" class="text-indigo-300 text-xs sm:text-sm mb-4 relative">Great job on your performance!</p>
+
+      <!-- New Best Badge -->
+      <div id="newBestBadge" class="hidden mb-4 px-4 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold inline-block shadow-lg">
+        🌟 New Personal Best!
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 gap-2 mb-5 relative text-left">
+        <div class="glass-bright rounded-2xl p-3">
+          <p class="text-[10px] text-indigo-300 uppercase font-semibold">Score</p>
+          <p id="finalScore" class="text-xl font-bold text-white tabular-nums">0</p>
+        </div>
+        <div class="glass-bright rounded-2xl p-3">
+          <p class="text-[10px] text-yellow-400 uppercase font-semibold">Best</p>
+          <p id="finalBest" class="text-xl font-bold text-yellow-400 tabular-nums">0</p>
+        </div>
+        <div class="glass-bright rounded-2xl p-3">
+          <p class="text-[10px] text-green-400 uppercase font-semibold">Correct Hits</p>
+          <p id="finalCorrect" class="text-xl font-bold text-green-400 tabular-nums">0</p>
+        </div>
+        <div class="glass-bright rounded-2xl p-3">
+          <p class="text-[10px] text-purple-400 uppercase font-semibold">Accuracy</p>
+          <p id="finalAccuracy" class="text-xl font-bold text-purple-400">0%</p>
+        </div>
+        <div class="glass-bright rounded-2xl p-3">
+          <p class="text-[10px] text-orange-400 uppercase font-semibold">Max Combo</p>
+          <p id="finalCombo" class="text-xl font-bold text-orange-400">x0</p>
+        </div>
+        <div class="glass-bright rounded-2xl p-3">
+          <p class="text-[10px] text-cyan-400 uppercase font-semibold">Time Used</p>
+          <p id="finalTime" class="text-xl font-bold text-cyan-400">0s</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2 relative">
+        <button id="restartBtn" onclick="initCurrentGame()"
+          class="flex-1 py-3 px-5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl text-sm shadow-xl transition-all hover:scale-[1.02] active:scale-95">
+          🔄 Play Again
+        </button>
+        <button id="shareBtn" onclick="shareScore()"
+          class="w-12 h-12 flex items-center justify-center glass-bright border border-white/20 hover:border-indigo-400 text-white rounded-2xl text-lg transition-all hover:scale-[1.02] active:scale-95 shrink-0" title="Share Score">
+          📤
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ JAVASCRIPT GAME ENGINE ════ -->
+  <script>
+    /* ══════════════════════════════════════════════════
+       MINDFORGE — Web Audio Synthesizer
+    ══════════════════════════════════════════════════ */
+    const SoundFX = {
+      ctx: null,
+      enabled: true,
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      playHit(multiplier = 1) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440 * (1 + (multiplier * 0.08)), this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880 * (1 + (multiplier * 0.08)), this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.08);
+      },
+      playMiss() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      },
+      playTone(freq, duration = 0.2) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      },
+      playWin() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.09);
+          gain.gain.setValueAtTime(0.2, now + i * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.09);
+          osc.stop(now + i * 0.09 + 0.25);
+        });
+      },
+      playGameOver() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [320, 260, 210, 160].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now + i * 0.12);
+          gain.gain.setValueAtTime(0.15, now + i * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.2);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.12);
+          osc.stop(now + i * 0.12 + 0.2);
+        });
+      }
+    };
+
+    /* ══════════════════════════════════════════════════
+       GLOBAL APP STATE & PERSISTENCE
+    ══════════════════════════════════════════════════ */
+    let currentGameId = 'number-rush';
+    let gameActive    = false;
+    let timerInterval = null;
+    let hintEnabled   = true;
+    let gameTime      = 30;
+    let diffLabel     = 'Easy';
+
+    // Game stats
+    let currentScore  = 0;
+    let currentHits   = 0;
+    let attempts      = 0;
+    let comboCount    = 0;
+    let maxCombo      = 0;
+    let timeLeft      = 30;
+    let totalTarget   = 25;
+
+    // Local Storage Data
+    let bestScores = JSON.parse(localStorage.getItem('mfBestScores') || '{}');
+    let sessionStats = { games: 0, totalScore: 0, totalHits: 0, totalAttempts: 0 };
+    let achievements = JSON.parse(localStorage.getItem('mfAchievements') || '{}');
+    let recentGames  = JSON.parse(localStorage.getItem('mfRecentGames') || '[]');
+
+    const CIRCUMFERENCE = 2 * Math.PI * 27; // ≈ 169.6
+
+    /* ─── DOM References ─── */
+    const timeEl       = document.getElementById('time');
+    const scoreEl      = document.getElementById('score');
+    const nextEl       = document.getElementById('nextNum');
+    const targetLabel  = document.getElementById('targetLabel');
+    const targetSub    = document.getElementById('targetSub');
+    const timerRing    = document.getElementById('timerRing');
+    const progressBar  = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const comboBadge   = document.getElementById('comboBadge');
+    const comboCountEl = document.getElementById('comboCount');
+    const messageEl    = document.getElementById('message');
+    const overlay      = document.getElementById('overlay');
+    const overlayEmoji = document.getElementById('overlayEmoji');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlaySub   = document.getElementById('overlaySubtitle');
+    const finalScore   = document.getElementById('finalScore');
+    const finalBest    = document.getElementById('finalBest');
+    const finalCorrect = document.getElementById('finalCorrect');
+    const finalAccuracy= document.getElementById('finalAccuracy');
+    const finalCombo   = document.getElementById('finalCombo');
+    const finalTime    = document.getElementById('finalTime');
+    const newBestBadge = document.getElementById('newBestBadge');
+    const navBest      = document.getElementById('navBest');
+
+    /* ══════════════════════════════════════════════════
+       PARTICLE BACKGROUND
+    ══════════════════════════════════════════════════ */
+    function initParticles() {
+      const container = document.getElementById('particles');
+      container.innerHTML = '';
+      const colors = ['#6366f1','#8b5cf6','#a78bfa','#c4b5fd','#38bdf8'];
+      for (let i = 0; i < 16; i++) {
+        const p = document.createElement('div');
+        p.className = 'bg-particle';
+        const size = Math.random() * 50 + 10;
+        p.style.cssText = `
+          width:${size}px; height:${size}px;
+          left:${Math.random() * 100}vw;
+          background:${colors[Math.floor(Math.random() * colors.length)]};
+          animation-duration:${Math.random() * 12 + 10}s;
+          animation-delay:${Math.random() * 8}s;
+        `;
+        container.appendChild(p);
+      }
+    }
+    initParticles();
+
+    /* ══════════════════════════════════════════════════
+       UTILITY FUNCTIONS
+    ══════════════════════════════════════════════════ */
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function showToast(msg, icon = '✨') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    function flashMessage(text, color) {
+      messageEl.textContent = text;
+      messageEl.style.color = color;
+      messageEl.style.opacity = '1';
+      clearTimeout(messageEl._timeout);
+      messageEl._timeout = setTimeout(() => {
+        messageEl.style.opacity = '0';
+      }, 1000);
+    }
+
+    function updateTimerRing() {
+      const offset = CIRCUMFERENCE * (1 - timeLeft / gameTime);
+      timerRing.style.strokeDashoffset = offset;
+      if (timeLeft > gameTime * 0.5) {
+        timerRing.style.stroke = '#6366f1';
+        timeEl.classList.remove('text-red-400', 'text-amber-400');
+      } else if (timeLeft > gameTime * 0.25) {
+        timerRing.style.stroke = '#f59e0b';
+        timeEl.classList.add('text-amber-400');
+        timeEl.classList.remove('text-red-400');
+      } else {
+        timerRing.style.stroke = '#ef4444';
+        timeEl.classList.add('text-red-400');
+        timeEl.classList.remove('text-amber-400');
+      }
+    }
+
+    function updateProgress(current, total) {
+      const pct = Math.min(100, (current / total) * 100);
+      progressBar.style.width = pct + '%';
+      progressText.textContent = `${current} / ${total}`;
+    }
+
+    function updateComboUI() {
+      if (comboCount >= 2) {
+        comboBadge.classList.remove('hidden');
+        comboCountEl.textContent = comboCount;
+      } else {
+        comboBadge.classList.add('hidden');
+      }
+    }
+
+    function updateStatsUI() {
+      const globalBest = Math.max(...Object.values(bestScores).concat([0]));
+      navBest.textContent = globalBest;
+      document.getElementById('sessGames').textContent = sessionStats.games;
+      document.getElementById('sessBest').textContent = bestScores[currentGameId] || 0;
+      
+      const avg = sessionStats.games > 0 ? Math.round(sessionStats.totalScore / sessionStats.games) : 0;
+      document.getElementById('sessAvg').textContent = avg;
+
+      const acc = sessionStats.totalAttempts > 0 ? Math.round((sessionStats.totalHits / sessionStats.totalAttempts) * 100) : 0;
+      document.getElementById('sessAcc').textContent = acc + '%';
+
+      // Achievements UI
+      Object.keys(achievements).forEach(key => {
+        const el = document.getElementById('ach-' + key);
+        if (el && achievements[key]) {
+          el.classList.remove('opacity-30');
+          el.classList.add('border-indigo-400/60', 'bg-indigo-500/20');
+        }
+      });
+
+      // Recent games list
+      const recentContainer = document.getElementById('recentGames');
+      if (recentGames.length === 0) {
+        recentContainer.innerHTML = '<p class="text-white/30 text-xs">No games played yet...</p>';
+      } else {
+        recentContainer.innerHTML = recentGames.slice(0, 5).map(g => `
+          <div class="glass-bright rounded-xl px-3 py-2 flex items-center justify-between">
+            <div>
+              <p class="font-bold text-white">${g.game}</p>
+              <p class="text-[10px] text-white/50">${g.diff} • ${g.time}</p>
+            </div>
+            <span class="font-bold ${g.won ? 'text-green-400' : 'text-red-400'}">${g.score} pts</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function unlockAchievement(key, name) {
+      if (!achievements[key]) {
+        achievements[key] = true;
+        localStorage.setItem('mfAchievements', JSON.stringify(achievements));
+        showToast(`Unlocked Achievement: ${name}!`, '🏆');
+        updateStatsUI();
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       GAME SWITCHER & NAVIGATION
+    ══════════════════════════════════════════════════ */
+    const GAME_CONFIGS = {
+      'number-rush': {
+        name: 'Number Rush',
+        instructions: [
+          '<span class="text-indigo-400 font-bold">①</span> Click numbers 1 → 25 in order',
+          '<span class="text-green-400 font-bold">②</span> +10 pts for correct clicks',
+          '<span class="text-red-400 font-bold">③</span> −5 pts for wrong clicks',
+          '<span class="text-yellow-400 font-bold">④</span> Build combos for multipliers!',
+          '<span class="text-purple-400 font-bold">⑤</span> Finish before time expires'
+        ],
+        targetLabel: 'Next',
+        targetSub: 'tap in order',
+        tip: 'Use peripheral vision to spot the next 2 numbers ahead of time!'
+      },
+      'memory-matrix': {
+        name: 'Memory Matrix',
+        instructions: [
+          '<span class="text-indigo-400 font-bold">①</span> Memorize illuminated grid tiles',
+          '<span class="text-green-400 font-bold">②</span> Pattern disappears after 1.5s',
+          '<span class="text-yellow-400 font-bold">③</span> Click hidden tiles from memory',
+          '<span class="text-purple-400 font-bold">④</span> Advance rounds for bigger grids'
+        ],
+        targetLabel: 'Target',
+        targetSub: 'tiles to recall',
+        tip: 'Group lit tiles into visual shapes (lines, triangles) to remember easier!'
+      },
+      'color-clash': {
+        name: 'Color Clash',
+        instructions: [
+          '<span class="text-indigo-400 font-bold">①</span> Read the displayed color word',
+          '<span class="text-green-400 font-bold">②</span> Compare text vs actual font color',
+          '<span class="text-yellow-400 font-bold">③</span> Tap YES if text matches font color',
+          '<span class="text-red-400 font-bold">④</span> Tap NO if text color differs'
+        ],
+        targetLabel: 'Streak',
+        targetSub: 'correct decisions',
+        tip: 'Focus on the visual font color first before reading the text word!'
+      },
+      'speed-math': {
+        name: 'Speed Math',
+        instructions: [
+          '<span class="text-indigo-400 font-bold">①</span> Solve rapid math equations',
+          '<span class="text-green-400 font-bold">②</span> Select correct answer from 4 choices',
+          '<span class="text-yellow-400 font-bold">③</span> +15 pts per correct answer',
+          '<span class="text-purple-400 font-bold">④</span> Build streak for bonus time'
+        ],
+        targetLabel: 'Round',
+        targetSub: 'solved equations',
+        tip: 'Round up or eliminate wrong odd/even answers quickly!'
+      },
+      'sequence-recall': {
+        name: 'Simon Recall',
+        instructions: [
+          '<span class="text-indigo-400 font-bold">①</span> Watch & listen to pad sequence',
+          '<span class="text-green-400 font-bold">②</span> Repeat pattern in exact order',
+          '<span class="text-yellow-400 font-bold">③</span> Sequence grows +1 each round',
+          '<span class="text-purple-400 font-bold">④</span> Test visual & auditory memory'
+        ],
+        targetLabel: 'Length',
+        targetSub: 'pattern steps',
+        tip: 'Assign number notes (1,2,3,4) or audio tones to pad colors mentally!'
+      }
+    };
+
+    function switchGame(gameId) {
+      if (gameActive) {
+        clearInterval(timerInterval);
+        gameActive = false;
+      }
+
+      currentGameId = gameId;
+
+      // Update Tab CSS
+      document.querySelectorAll('.game-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      const activeTab = document.getElementById('tab-' + gameId);
+      const activeMobTab = document.getElementById('mob-tab-' + gameId);
+      if (activeTab) activeTab.classList.add('active');
+      if (activeMobTab) activeMobTab.classList.add('active');
+
+      // Hide all game views
+      document.querySelectorAll('.game-view').forEach(v => v.classList.add('hidden'));
+      const activeView = document.getElementById('game-' + gameId);
+      if (activeView) activeView.classList.remove('hidden');
+
+      // Update Instructions & Sidebar
+      const config = GAME_CONFIGS[gameId];
+      document.getElementById('activeGameBadge').textContent = config.name;
+      document.getElementById('instructionsList').innerHTML = config.instructions.map(i => `<li class="flex items-start gap-2">${i}</li>`).join('');
+      document.getElementById('tipText').textContent = config.tip;
+      targetLabel.textContent = config.targetLabel;
+      targetSub.textContent = config.targetSub;
+
+      updateStatsUI();
+      initCurrentGame();
+    }
+
+    function initCurrentGame() {
+      clearInterval(timerInterval);
+      overlay.classList.add('hidden');
+      currentScore = 0;
+      currentHits  = 0;
+      attempts     = 0;
+      comboCount   = 0;
+      maxCombo     = 0;
+      timeLeft     = gameTime;
+
+      scoreEl.textContent = '0';
+      timeEl.textContent = timeLeft;
+      comboBadge.classList.add('hidden');
+      updateTimerRing();
+
+      if (currentGameId === 'number-rush') initNumberRush();
+      else if (currentGameId === 'memory-matrix') initMemoryMatrix();
+      else if (currentGameId === 'color-clash') initColorClash();
+      else if (currentGameId === 'speed-math') initSpeedMath();
+      else if (currentGameId === 'sequence-recall') initSequenceRecall();
+    }
+
+    function startTimer(onTickComplete) {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timeEl.textContent = timeLeft;
+        updateTimerRing();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endGame(false);
+        }
+      }, 1000);
+    }
+
+    function endGame(won) {
+      gameActive = false;
+      clearInterval(timerInterval);
+      sessionStats.games++;
+      sessionStats.totalScore += currentScore;
+      sessionStats.totalHits += currentHits;
+      sessionStats.totalAttempts += attempts;
+
+      const currentBest = bestScores[currentGameId] || 0;
+      let isNewBest = false;
+      if (currentScore > currentBest) {
+        bestScores[currentGameId] = currentScore;
+        localStorage.setItem('mfBestScores', JSON.stringify(bestScores));
+        isNewBest = true;
+      }
+
+      // Check achievements
+      if (won) {
+        SoundFX.playWin();
+        unlockAchievement('first', 'First Win');
+        if (timeLeft >= 15 && currentGameId === 'number-rush') unlockAchievement('speed', 'Speed Demon');
+        if (attempts > 0 && currentHits === attempts) unlockAchievement('perfect', 'Perfect Accuracy');
+        if (maxCombo >= 5) unlockAchievement('combo', 'Combo Master');
+        if (diffLabel === 'Hard') unlockAchievement('hard', 'Hardcore');
+      } else {
+        SoundFX.playGameOver();
+      }
+
+      if (sessionStats.games >= 10) unlockAchievement('veteran', 'Veteran Player');
+
+      // Add to recent history
+      recentGames.unshift({
+        game: GAME_CONFIGS[currentGameId].name,
+        diff: diffLabel,
+        score: currentScore,
+        won: won,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      if (recentGames.length > 10) recentGames.pop();
+      localStorage.setItem('mfRecentGames', JSON.stringify(recentGames));
+
+      // Populate Overlay
+      overlayEmoji.textContent = won ? '🏆' : (currentScore > 100 ? '🌟' : '⏱️');
+      overlayTitle.textContent = won ? 'Game Cleared!' : "Time's Up!";
+      overlaySub.textContent = won ? `Outstanding effort in ${GAME_CONFIGS[currentGameId].name}!` : `You achieved ${currentScore} points. Try again!`;
+      
+      finalScore.textContent = currentScore;
+      finalBest.textContent  = bestScores[currentGameId] || 0;
+      finalCorrect.textContent = currentHits;
+      
+      const acc = attempts > 0 ? Math.round((currentHits / attempts) * 100) : 100;
+      finalAccuracy.textContent = acc + '%';
+      finalCombo.textContent = 'x' + maxCombo;
+      finalTime.textContent = (gameTime - timeLeft) + 's';
+
+      if (isNewBest && currentScore > 0) newBestBadge.classList.remove('hidden');
+      else newBestBadge.classList.add('hidden');
+
+      updateStatsUI();
+      setTimeout(() => overlay.classList.remove('hidden'), 400);
+    }
+
+    /* ══════════════════════════════════════════════════
+       GAME 1: NUMBER RUSH
+    ══════════════════════════════════════════════════ */
+    let nrCurrent = 1;
+
+    function initNumberRush() {
+      nrCurrent = 1;
+      totalTarget = 25;
+      nextEl.textContent = '1';
+      updateProgress(0, totalTarget);
+
+      const grid = document.getElementById('game-number-rush');
+      grid.innerHTML = '';
+      grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+
+      const nums = shuffle([...Array(totalTarget)].map((_, i) => i + 1));
+      nums.forEach((num, idx) => {
+        const cell = document.createElement('div');
+        cell.className = `cell flex items-center justify-center rounded-xl text-base sm:text-lg font-extrabold
+          bg-white/10 border border-white/20 text-white aspect-square hover:bg-indigo-500/40 hover:border-indigo-400 animate-pop-in`;
+        cell.style.animationDelay = `${idx * 0.02}s`;
+        cell.dataset.num = num;
+        cell.textContent = num;
+
+        cell.addEventListener('click', () => handleNumberRushClick(cell, num));
+        grid.appendChild(cell);
+      });
+
+      if (hintEnabled) updateNumberRushHint();
+      gameActive = true;
+      startTimer();
+    }
+
+    function updateNumberRushHint() {
+      document.querySelectorAll('#game-number-rush .cell').forEach(c => {
+        c.classList.remove('next-hint');
+        if (hintEnabled && parseInt(c.dataset.num) === nrCurrent && !c.classList.contains('used')) {
+          c.classList.add('next-hint');
+        }
+      });
+    }
+
+    function handleNumberRushClick(cell, num) {
+      if (!gameActive || cell.classList.contains('used')) return;
+      attempts++;
+
+      if (num === nrCurrent) {
+        // Correct hit
+        currentHits++;
+        comboCount++;
+        maxCombo = Math.max(maxCombo, comboCount);
+        updateComboUI();
+
+        const pts = 10 + (comboCount > 1 ? (comboCount - 1) * 5 : 0);
+        currentScore += pts;
+        scoreEl.textContent = currentScore;
+
+        SoundFX.playHit(comboCount);
+        cell.classList.add('used', 'correct');
+        cell.classList.remove('next-hint');
+        updateProgress(currentHits, totalTarget);
+
+        if (currentHits === totalTarget) {
+          endGame(true);
+          return;
+        }
+
+        nrCurrent++;
+        nextEl.textContent = nrCurrent;
+        flashMessage(`+${pts} pts!`, '#10b981');
+        if (hintEnabled) updateNumberRushHint();
+      } else {
+        // Wrong click
+        comboCount = 0;
+        updateComboUI();
+        currentScore = Math.max(0, currentScore - 5);
+        scoreEl.textContent = currentScore;
+
+        SoundFX.playMiss();
+        cell.classList.add('wrong');
+        setTimeout(() => cell.classList.remove('wrong'), 400);
+        flashMessage('-5 pts', '#ef4444');
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       GAME 2: MEMORY MATRIX
+    ══════════════════════════════════════════════════ */
+    let matrixRound = 1;
+    let targetTiles = [];
+    let userSelectedTiles = [];
+    let matrixSize = 4;
+    let tileCount = 4;
+
+    function initMemoryMatrix() {
+      matrixRound = 1;
+      startMatrixRound();
+    }
+
+    function startMatrixRound() {
+      matrixSize = matrixRound > 3 ? 5 : 4;
+      tileCount = Math.min(3 + matrixRound, Math.floor((matrixSize * matrixSize) / 2));
+      totalTarget = tileCount;
+      userSelectedTiles = [];
+
+      nextEl.textContent = tileCount;
+      updateProgress(0, tileCount);
+
+      const status = document.getElementById('matrixStatus');
+      status.textContent = `Round ${matrixRound}: Memorize the lit tiles!`;
+
+      const grid = document.getElementById('matrixGrid');
+      grid.innerHTML = '';
+      grid.style.gridTemplateColumns = `repeat(${matrixSize}, 1fr)`;
+
+      const totalCells = matrixSize * matrixSize;
+      const allIndices = shuffle([...Array(totalCells)].map((_, i) => i));
+      targetTiles = allIndices.slice(0, tileCount);
+
+      for (let i = 0; i < totalCells; i++) {
+        const cell = document.createElement('div');
+        cell.className = `cell flex items-center justify-center rounded-xl bg-white/10 border border-white/20 aspect-square transition-all`;
+        cell.dataset.index = i;
+        if (targetTiles.includes(i)) {
+          cell.classList.add('active-pattern');
+        }
+        grid.appendChild(cell);
+      }
+
+      gameActive = false;
+      // Show pattern for 1.5s then allow clicks
+      setTimeout(() => {
+        document.querySelectorAll('#matrixGrid .cell').forEach(c => {
+          c.classList.remove('active-pattern');
+          c.addEventListener('click', () => handleMatrixClick(c, parseInt(c.dataset.index)));
+        });
+        status.textContent = 'Recall and tap the tiles!';
+        gameActive = true;
+        if (matrixRound === 1) startTimer();
+      }, 1500);
+    }
+
+    function handleMatrixClick(cell, index) {
+      if (!gameActive || cell.classList.contains('used')) return;
+      attempts++;
+
+      cell.classList.add('used');
+      if (targetTiles.includes(index)) {
+        currentHits++;
+        userSelectedTiles.push(index);
+        cell.classList.add('correct');
+        SoundFX.playHit(userSelectedTiles.length);
+        currentScore += 15;
+        scoreEl.textContent = currentScore;
+        updateProgress(userSelectedTiles.length, tileCount);
+
+        if (userSelectedTiles.length === tileCount) {
+          matrixRound++;
+          flashMessage('Perfect! Next Round!', '#10b981');
+          setTimeout(startMatrixRound, 800);
+        }
+      } else {
+        comboCount = 0;
+        updateComboUI();
+        cell.classList.add('wrong');
+        SoundFX.playMiss();
+        flashMessage('Wrong Tile!', '#ef4444');
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       GAME 3: COLOR CLASH (STROOP EFFECT)
+    ══════════════════════════════════════════════════ */
+    const COLOR_NAMES = ['RED', 'BLUE', 'GREEN', 'YELLOW', 'PURPLE', 'ORANGE'];
+    const COLOR_CODES = {
+      RED: '#ef4444',
+      BLUE: '#3b82f6',
+      GREEN: '#10b981',
+      YELLOW: '#f59e0b',
+      PURPLE: '#a855f7',
+      ORANGE: '#f97316'
+    };
+
+    let currentStroopMatch = false;
+
+    function initColorClash() {
+      totalTarget = 15;
+      nextEl.textContent = '0';
+      updateProgress(0, totalTarget);
+      gameActive = true;
+      generateColorClashQuestion();
+      startTimer();
+    }
+
+    function generateColorClashQuestion() {
+      const textWord = COLOR_NAMES[Math.floor(Math.random() * COLOR_NAMES.length)];
+      currentStroopMatch = Math.random() > 0.5;
+
+      let colorWord = textWord;
+      if (!currentStroopMatch) {
+        const remaining = COLOR_NAMES.filter(c => c !== textWord);
+        colorWord = remaining[Math.floor(Math.random() * remaining.length)];
+      }
+
+      const wordEl = document.getElementById('stroopWord');
+      wordEl.textContent = textWord;
+      wordEl.style.color = COLOR_CODES[colorWord];
+    }
+
+    function handleColorClash(userSaidMatch) {
+      if (!gameActive) return;
+      attempts++;
+
+      if (userSaidMatch === currentStroopMatch) {
+        currentHits++;
+        comboCount++;
+        maxCombo = Math.max(maxCombo, comboCount);
+        updateComboUI();
+
+        const pts = 10 + comboCount * 2;
+        currentScore += pts;
+        scoreEl.textContent = currentScore;
+        nextEl.textContent = currentHits;
+
+        SoundFX.playHit(comboCount);
+        updateProgress(currentHits, totalTarget);
+
+        if (currentHits >= totalTarget) {
+          endGame(true);
+          return;
+        }
+
+        flashMessage('Correct!', '#10b981');
+      } else {
+        comboCount = 0;
+        updateComboUI();
+        currentScore = Math.max(0, currentScore - 5);
+        scoreEl.textContent = currentScore;
+        SoundFX.playMiss();
+        flashMessage('Wrong!', '#ef4444');
+      }
+
+      generateColorClashQuestion();
+    }
+
+    /* ══════════════════════════════════════════════════
+       GAME 4: SPEED MATH BLITZ
+    ══════════════════════════════════════════════════ */
+    let mathCorrectAnswer = 0;
+
+    function initSpeedMath() {
+      totalTarget = 15;
+      nextEl.textContent = '0';
+      updateProgress(0, totalTarget);
+      gameActive = true;
+      generateMathQuestion();
+      startTimer();
+    }
+
+    function generateMathQuestion() {
+      const ops = ['+', '-', '*'];
+      const op = ops[Math.floor(Math.random() * ops.length)];
+      let a, b, ans;
+
+      if (op === '+') {
+        a = Math.floor(Math.random() * 30) + 5;
+        b = Math.floor(Math.random() * 30) + 5;
+        ans = a + b;
+      } else if (op === '-') {
+        a = Math.floor(Math.random() * 40) + 10;
+        b = Math.floor(Math.random() * a);
+        ans = a - b;
+      } else {
+        a = Math.floor(Math.random() * 10) + 2;
+        b = Math.floor(Math.random() * 10) + 2;
+        ans = a * b;
+      }
+
+      mathCorrectAnswer = ans;
+      document.getElementById('mathEquation').textContent = `${a} ${op === '*' ? '×' : op} ${b}`;
+
+      let choices = [ans];
+      while (choices.length < 4) {
+        const offset = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 8) + 1);
+        const wrong = ans + offset;
+        if (!choices.includes(wrong) && wrong >= 0) choices.push(wrong);
+      }
+      choices = shuffle(choices);
+
+      const optsContainer = document.getElementById('mathOptions');
+      optsContainer.innerHTML = choices.map(ch => `
+        <button onclick="handleMathChoice(${ch})" class="py-3 px-4 rounded-xl glass-bright border border-white/20 text-white font-extrabold text-xl hover:bg-indigo-500/40 hover:border-indigo-400 active:scale-95 transition-all">
+          ${ch}
+        </button>
+      `).join('');
+    }
+
+    function handleMathChoice(choice) {
+      if (!gameActive) return;
+      attempts++;
+
+      if (choice === mathCorrectAnswer) {
+        currentHits++;
+        comboCount++;
+        maxCombo = Math.max(maxCombo, comboCount);
+        updateComboUI();
+
+        const pts = 15 + comboCount * 3;
+        currentScore += pts;
+        scoreEl.textContent = currentScore;
+        nextEl.textContent = currentHits;
+
+        SoundFX.playHit(comboCount);
+        updateProgress(currentHits, totalTarget);
+
+        if (currentHits >= totalTarget) {
+          endGame(true);
+          return;
+        }
+
+        flashMessage('Correct!', '#10b981');
+      } else {
+        comboCount = 0;
+        updateComboUI();
+        currentScore = Math.max(0, currentScore - 5);
+        scoreEl.textContent = currentScore;
+        SoundFX.playMiss();
+        flashMessage('Wrong!', '#ef4444');
+      }
+
+      generateMathQuestion();
+    }
+
+    /* ══════════════════════════════════════════════════
+       GAME 5: SIMON SEQUENCE RECALL
+    ══════════════════════════════════════════════════ */
+    let simonSequence = [];
+    let simonUserStep = 0;
+    const SIMON_TONES = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+
+    function initSequenceRecall() {
+      simonSequence = [];
+      simonUserStep = 0;
+      totalTarget = 10;
+      nextEl.textContent = '1';
+      updateProgress(0, totalTarget);
+      nextSimonRound();
+    }
+
+    function nextSimonRound() {
+      simonSequence.push(Math.floor(Math.random() * 4));
+      simonUserStep = 0;
+      nextEl.textContent = simonSequence.length;
+
+      const status = document.getElementById('sequenceStatus');
+      status.textContent = 'Watch the pattern...';
+      gameActive = false;
+
+      playSimonSequence(() => {
+        status.textContent = 'Your turn! Repeat the sequence.';
+        gameActive = true;
+        if (simonSequence.length === 1) startTimer();
+      });
+    }
+
+    function playSimonSequence(onComplete) {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i >= simonSequence.length) {
+          clearInterval(interval);
+          if (onComplete) onComplete();
+          return;
+        }
+        highlightSimonPad(simonSequence[i]);
+        i++;
+      }, 700);
+    }
+
+    function highlightSimonPad(padIdx) {
+      const pad = document.getElementById('simon-' + padIdx);
+      if (!pad) return;
+      pad.classList.add('scale-105', 'brightness-150', 'border-white');
+      SoundFX.playTone(SIMON_TONES[padIdx], 0.25);
+      setTimeout(() => {
+        pad.classList.remove('scale-105', 'brightness-150', 'border-white');
+      }, 350);
+    }
+
+    function handleSimonClick(padIdx) {
+      if (!gameActive) return;
+      attempts++;
+      highlightSimonPad(padIdx);
+
+      if (padIdx === simonSequence[simonUserStep]) {
+        simonUserStep++;
+        currentHits++;
+        currentScore += 20;
+        scoreEl.textContent = currentScore;
+
+        if (simonUserStep === simonSequence.length) {
+          comboCount++;
+          maxCombo = Math.max(maxCombo, comboCount);
+          updateComboUI();
+          updateProgress(simonSequence.length, totalTarget);
+
+          if (simonSequence.length >= totalTarget) {
+            endGame(true);
+            return;
+          }
+
+          flashMessage('Sequence Complete!', '#10b981');
+          setTimeout(nextSimonRound, 1000);
+        }
+      } else {
+        comboCount = 0;
+        updateComboUI();
+        SoundFX.playMiss();
+        flashMessage('Wrong Sequence!', '#ef4444');
+        endGame(false);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       UI CONTROLS & LISTENERS
+    ══════════════════════════════════════════════════ */
+    // Difficulty Buttons
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        gameTime = parseInt(btn.dataset.time);
+        diffLabel = btn.dataset.label;
+        document.getElementById('diffLabel').textContent = diffLabel;
+        
+        initCurrentGame();
+      });
+    });
+
+    // Hint Toggle
+    document.getElementById('hintToggle').addEventListener('click', () => {
+      hintEnabled = !hintEnabled;
+      const status = document.getElementById('hintStatus');
+      if (hintEnabled) {
+        status.className = 'w-3.5 h-3.5 rounded-full bg-indigo-500 border-2 border-indigo-300 inline-block';
+        showToast('Hints Enabled');
+      } else {
+        status.className = 'w-3.5 h-3.5 rounded-full bg-gray-500 border-2 border-gray-400 inline-block';
+        showToast('Hints Disabled');
+      }
+      if (currentGameId === 'number-rush') updateNumberRushHint();
+    });
+
+    // Sound Toggle
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      SoundFX.enabled = !SoundFX.enabled;
+      const btn = document.getElementById('soundToggle');
+      if (SoundFX.enabled) {
+        btn.textContent = '🔊';
+        showToast('Sound Enabled');
+      } else {
+        btn.textContent = '🔇';
+        showToast('Sound Muted');
+      }
+    });
+
+    // Share Score
+    function shareScore() {
+      const text = `🧠 MindForge Brain Games\n🎮 Game: ${GAME_CONFIGS[currentGameId].name}\n🏆 Score: ${currentScore} pts (${diffLabel})\n🎯 Accuracy: ${finalAccuracy.textContent}\nPlay now!`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Score copied to clipboard!', '📋');
+        });
+      } else {
+        showToast('Share: ' + currentScore + ' pts');
+      }
+    }
+
+    // Initialize Default Game
+    switchGame('number-rush');
+  </script>
+</body>
+</html>

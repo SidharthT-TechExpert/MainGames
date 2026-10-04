@@ -1,0 +1,23 @@
+{
+  "name": "mindforge-brain-games",
+  "version": "1.0.0",
+  "description": "MindForge — Ultimate Brain & Cognitive Games Hub containing Number Rush, Memory Matrix, Color Clash, Speed Math, and Simon Recall.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "brain-games",
+    "mind-games",
+    "number-rush",
+    "memory-matrix",
+    "stroop-effect",
+    "speed-math",
+    "simon-recall",
+    "vercel",
+    "web-audio"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}
