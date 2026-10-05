@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>MindForge — AAA Cyber Cognitive Arena</title>
-  <meta name="description" content="Ultimate Cyber Brain Training Hub. Play Number Rush, Memory Matrix, Color Clash, Speed Math, and Simon Recall with widescreen 3-column dashboard!" />
+  <title>MindForge 3.5 — AAA Cyber Cognitive Arena</title>
+  <meta name="description" content="Ultimate Cyber Brain Training Hub. Play Number Rush, Memory Matrix, Color Clash, Speed Math, Simon Recall, and Flexi Switch!" />
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -81,6 +81,26 @@
       --accent-glow-strong: rgba(16, 185, 129, 0.85);
       --card-bg: rgba(6, 30, 18, 0.85);
       --card-border: rgba(16, 185, 129, 0.25);
+    }
+
+    [data-theme="sunset"] {
+      --bg-main: #180b05;
+      --accent-color: #f97316;
+      --accent-secondary: #ef4444;
+      --accent-glow: rgba(249, 115, 22, 0.35);
+      --accent-glow-strong: rgba(249, 115, 22, 0.85);
+      --card-bg: rgba(35, 18, 10, 0.85);
+      --card-border: rgba(249, 115, 22, 0.25);
+    }
+
+    [data-theme="obsidian"] {
+      --bg-main: #090a0f;
+      --accent-color: #eab308;
+      --accent-secondary: #ca8a04;
+      --accent-glow: rgba(234, 179, 8, 0.35);
+      --accent-glow-strong: rgba(234, 179, 8, 0.85);
+      --card-bg: rgba(20, 22, 30, 0.88);
+      --card-border: rgba(234, 179, 8, 0.25);
     }
 
     *, *::before, *::after {
@@ -244,35 +264,38 @@
         <div>
           <div class="flex items-center gap-1.5">
             <span class="font-black text-white text-base sm:text-xl tracking-tight leading-none font-mono">MINDFORGE</span>
-            <span class="px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[8px] sm:text-[9px] font-extrabold uppercase border border-cyan-500/40">3.0</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[8px] sm:text-[9px] font-extrabold uppercase border border-cyan-500/40">3.5</span>
           </div>
         </div>
       </a>
     </div>
 
-    <!-- Center: Game Selector Tabs -->
-    <div class="hidden md:flex items-center gap-1 glass-card rounded-xl p-1 border border-white/10">
-      <button onclick="switchGame('number-rush')" id="tab-number-rush" class="game-tab-btn active px-3 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
+    <!-- Center: Game Selector Tabs (6 Games) -->
+    <div class="hidden xl:flex items-center gap-1 glass-card rounded-xl p-1 border border-white/10">
+      <button onclick="switchGame('number-rush')" id="tab-number-rush" class="game-tab-btn active px-2.5 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
         🔢 Number Rush
       </button>
-      <button onclick="switchGame('memory-matrix')" id="tab-memory-matrix" class="game-tab-btn px-3 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
+      <button onclick="switchGame('memory-matrix')" id="tab-memory-matrix" class="game-tab-btn px-2.5 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
         🧩 Memory Matrix
       </button>
-      <button onclick="switchGame('color-clash')" id="tab-color-clash" class="game-tab-btn px-3 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
+      <button onclick="switchGame('color-clash')" id="tab-color-clash" class="game-tab-btn px-2.5 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
         🎨 Color Clash
       </button>
-      <button onclick="switchGame('speed-math')" id="tab-speed-math" class="game-tab-btn px-3 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
+      <button onclick="switchGame('speed-math')" id="tab-speed-math" class="game-tab-btn px-2.5 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
         ⚡ Speed Math
       </button>
-      <button onclick="switchGame('sequence-recall')" id="tab-sequence-recall" class="game-tab-btn px-3 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
+      <button onclick="switchGame('sequence-recall')" id="tab-sequence-recall" class="game-tab-btn px-2.5 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
         🎵 Simon Recall
+      </button>
+      <button onclick="switchGame('flexi-switch')" id="tab-flexi-switch" class="game-tab-btn px-2.5 py-1 rounded-lg text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1">
+        🔀 Flexi Switch
       </button>
     </div>
 
     <!-- Right Controls -->
     <div class="flex items-center gap-1.5 sm:gap-2">
-      <!-- Vault Trigger (Mobile) -->
-      <button onclick="openGameVault()" class="md:hidden px-2 py-1 rounded-xl glass-card text-xs text-cyan-300 font-bold border border-cyan-400/40 flex items-center gap-1">
+      <!-- Vault Trigger -->
+      <button onclick="openGameVault()" class="xl:hidden px-2.5 py-1 rounded-xl glass-card text-xs text-cyan-300 font-bold border border-cyan-400/40 flex items-center gap-1 hover:border-cyan-300 transition-all">
         🎮 Vault
       </button>
 
@@ -281,10 +304,12 @@
         <button id="themeBtn" onclick="toggleThemeDropdown()" class="px-2 sm:px-2.5 py-1 rounded-xl glass-card text-xs text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400 transition-all font-bold flex items-center gap-1">
           🎨 <span class="hidden sm:inline">Theme</span>
         </button>
-        <div id="themeMenu" class="hidden absolute right-0 mt-2 w-32 glass-card rounded-2xl p-1.5 border border-white/20 shadow-2xl z-50 flex flex-col gap-1 text-xs">
+        <div id="themeMenu" class="hidden absolute right-0 mt-2 w-36 glass-card rounded-2xl p-1.5 border border-white/20 shadow-2xl z-50 flex flex-col gap-1 text-xs">
           <button onclick="setTheme('cyan')" class="w-full text-left px-2.5 py-1 rounded-xl text-cyan-300 hover:bg-white/10 font-bold text-[11px]">🩵 Cyber Cyan</button>
           <button onclick="setTheme('synthwave')" class="w-full text-left px-2.5 py-1 rounded-xl text-pink-400 hover:bg-white/10 font-bold text-[11px]">🩷 Synthwave</button>
           <button onclick="setTheme('matrix')" class="w-full text-left px-2.5 py-1 rounded-xl text-emerald-400 hover:bg-white/10 font-bold text-[11px]">🟢 Matrix</button>
+          <button onclick="setTheme('sunset')" class="w-full text-left px-2.5 py-1 rounded-xl text-orange-400 hover:bg-white/10 font-bold text-[11px]">🔥 Sunset Neon</button>
+          <button onclick="setTheme('obsidian')" class="w-full text-left px-2.5 py-1 rounded-xl text-amber-300 hover:bg-white/10 font-bold text-[11px]">⚡ Obsidian Gold</button>
         </div>
       </div>
 
@@ -293,6 +318,12 @@
         class="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl glass-card text-xs text-cyan-300 hover:text-white border border-white/10 hover:border-cyan-400/50 transition-all font-bold">
         💡 <span class="hidden sm:inline">Hint</span>
         <span id="hintStatus" class="w-3 h-3 rounded-full bg-cyan-400 border-2 border-cyan-200 inline-block"></span>
+      </button>
+
+      <!-- Ambient Music Toggle -->
+      <button id="musicToggle" onclick="AmbientSynth.toggle()" title="Toggle Ambient Synth Music"
+        class="px-2 sm:px-2.5 py-1 rounded-xl glass-card text-xs text-purple-300 hover:text-white border border-white/10 hover:border-purple-400/50 transition-all font-bold flex items-center gap-1">
+        🎵 <span class="hidden sm:inline">Music</span>
       </button>
 
       <!-- Sound Toggle -->
@@ -308,10 +339,10 @@
     </div>
   </header>
 
-  <!-- ════ LUXURIOUS 3-COLUMN DESKTOP DASHBOARD (Fills Left & Right Empty Spaces) ════ -->
+  <!-- ════ LUXURIOUS 3-COLUMN DESKTOP DASHBOARD ════ -->
   <div class="w-full max-w-7xl mx-auto px-4 xl:px-8 py-4 flex-1 flex flex-col xl:flex-row items-center xl:items-start justify-center xl:justify-between gap-6">
 
-    <!-- ════ LEFT SIDEBAR PANEL (Desktop Left Space) ════ -->
+    <!-- ════ LEFT SIDEBAR PANEL ════ -->
     <aside class="hidden xl:flex flex-col w-72 shrink-0 gap-4">
       
       <!-- Card 1: Dynamic Game Instructions & Legend -->
@@ -336,7 +367,7 @@
         </div>
         <div class="flex justify-between text-[10px] text-slate-400 font-semibold">
           <span>Total XP: <span id="userXpCurrent">150</span></span>
-          <span>Streak: 🔥 3 Days</span>
+          <span id="dailyStreakText">Streak: 🔥 <span id="streakCountNum">1</span> Day</span>
         </div>
       </div>
 
@@ -404,7 +435,7 @@
           </div>
 
           <!-- Grid Modes -->
-          <div class="flex items-center gap-1 text-[10px] sm:text-xs">
+          <div class="flex items-center gap-1 text-[10px] sm:text-xs" id="gridModeBox">
             <button onclick="setGridMode(25)" id="grid-mode-25" class="px-2 py-0.5 rounded-md glass-card text-cyan-300 font-bold border border-cyan-400/40">5x5</button>
             <button onclick="setGridMode(36)" id="grid-mode-36" class="px-2 py-0.5 rounded-md glass-card text-slate-400 font-bold border border-white/10 hover:text-white">6x6</button>
           </div>
@@ -469,6 +500,24 @@
             </div>
           </div>
 
+          <!-- Game 6: Flexi Switch -->
+          <div id="game-flexi-switch" class="game-view hidden w-full max-w-xs mx-auto flex flex-col items-center justify-center gap-3 py-2">
+            <div id="flexiRuleBadge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg border border-cyan-400/40 bg-cyan-500/20 text-cyan-300 animate-fade-in">
+              RULE: EVEN OR ODD?
+            </div>
+            <div class="text-center glass-card-glow px-8 py-4 rounded-3xl border border-cyan-400/40 shadow-xl w-full">
+              <div id="flexiNumber" class="text-5xl sm:text-6xl font-black tracking-wider text-white font-mono select-none">7</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 w-full">
+              <button id="flexiBtn1" onclick="handleFlexiChoice(1, event)" class="py-3 px-3 rounded-2xl glass-card border border-white/20 text-white font-black text-sm sm:text-lg hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all shadow-lg">
+                EVEN
+              </button>
+              <button id="flexiBtn2" onclick="handleFlexiChoice(2, event)" class="py-3 px-3 rounded-2xl glass-card border border-white/20 text-white font-black text-sm sm:text-lg hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all shadow-lg">
+                ODD
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -477,7 +526,7 @@
 
     </main>
 
-    <!-- ════ RIGHT SIDEBAR PANEL (Desktop Right Space) ════ -->
+    <!-- ════ RIGHT SIDEBAR PANEL ════ -->
     <aside class="hidden xl:flex flex-col w-72 shrink-0 gap-4">
       
       <!-- Card 1: Live Performance Analytics -->
@@ -579,7 +628,7 @@
         <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2 font-mono">
           🎮 MINDFORGE VAULT
         </h2>
-        <p class="text-xs text-slate-400 mt-0.5">Select a game to train memory, focus, and speed.</p>
+        <p class="text-xs text-slate-400 mt-0.5">Select a game to train memory, focus, math, and switching agility.</p>
       </div>
 
       <div class="grid sm:grid-cols-2 gap-3">
@@ -619,13 +668,22 @@
           <p class="text-[10px] text-slate-400 mt-0.5">Solve rapid math equations.</p>
         </div>
 
-        <div onclick="switchGame('sequence-recall'); closeGameVault();" class="glass-card p-4 rounded-2xl border border-white/10 hover:border-amber-400 transition-all cursor-pointer group sm:col-span-2">
+        <div onclick="switchGame('sequence-recall'); closeGameVault();" class="glass-card p-4 rounded-2xl border border-white/10 hover:border-amber-400 transition-all cursor-pointer group">
           <div class="flex items-center justify-between mb-2">
             <span class="text-2xl">🎵</span>
             <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[9px] font-bold">Audio</span>
           </div>
           <h3 class="text-sm font-extrabold text-white group-hover:text-amber-300">Simon Recall</h3>
           <p class="text-[10px] text-slate-400 mt-0.5">Repeat expanding pad sound sequences.</p>
+        </div>
+
+        <div onclick="switchGame('flexi-switch'); closeGameVault();" class="glass-card p-4 rounded-2xl border border-white/10 hover:border-blue-400 transition-all cursor-pointer group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-2xl">🔀</span>
+            <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[9px] font-bold">Agility</span>
+          </div>
+          <h3 class="text-sm font-extrabold text-white group-hover:text-blue-300">Flexi Switch</h3>
+          <p class="text-[10px] text-slate-400 mt-0.5">Rapid executive task switching.</p>
         </div>
       </div>
     </div>
@@ -637,7 +695,12 @@
       
       <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 pointer-events-none"></div>
 
-      <div id="overlayEmoji" class="text-5xl mb-1.5 relative">🏆</div>
+      <!-- Grade Rank Badge -->
+      <div id="gradeRankContainer" class="mb-2">
+        <span id="gradeRankBadge" class="px-4 py-1 rounded-full text-base font-black border uppercase tracking-widest inline-block shadow-lg">S+ RANK</span>
+      </div>
+
+      <div id="overlayEmoji" class="text-4xl mb-1 relative">🏆</div>
       <h2 id="overlayTitle" class="text-2xl font-black text-white mb-0.5 relative font-mono">You Win!</h2>
       <p id="overlaySubtitle" class="text-cyan-300 text-xs mb-3 relative font-medium">Great job on your performance!</p>
 
@@ -686,7 +749,7 @@
   <!-- ════ JAVASCRIPT ENGINE ════ -->
   <script>
     /* ══════════════════════════════════════════════════
-       MINDFORGE — Web Audio Synthesizer
+       MINDFORGE — Web Audio Synthesizer Sound Engine
     ══════════════════════════════════════════════════ */
     const SoundFX = {
       ctx: null,
@@ -789,6 +852,66 @@
       }
     };
 
+    /* Ambient Synthesizer BGM Generator */
+    const AmbientSynth = {
+      ctx: null,
+      playing: false,
+      timer: null,
+      chords: [
+        [261.63, 329.63, 392.00], // C major
+        [220.00, 261.63, 329.63], // A minor
+        [174.61, 220.00, 261.63], // F major
+        [196.00, 246.94, 293.66]  // G major
+      ],
+      chordIdx: 0,
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = SoundFX.ctx || new AudioCtx();
+        }
+      },
+      toggle() {
+        this.init();
+        if (this.playing) {
+          this.stop();
+        } else {
+          this.start();
+        }
+      },
+      start() {
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        this.playing = true;
+        this.playChord();
+        this.timer = setInterval(() => this.playChord(), 4000);
+        showToast('Ambient Synth Music Active', 'Synth BGM', '🎵');
+      },
+      stop() {
+        this.playing = false;
+        if (this.timer) clearInterval(this.timer);
+        showToast('Ambient Music Muted', 'Synth BGM', '🔇');
+      },
+      playChord() {
+        if (!this.playing || !this.ctx) return;
+        const chord = this.chords[this.chordIdx % this.chords.length];
+        this.chordIdx++;
+        const now = this.ctx.currentTime;
+        chord.forEach(freq => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(0.035, now + 1);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.8);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 3.9);
+        });
+      }
+    };
+
     /* ══════════════════════════════════════════════════
        CANVAS CONFETTI
     ══════════════════════════════════════════════════ */
@@ -846,8 +969,8 @@
       popup.className = 'float-score-popup text-sm sm:text-base';
       popup.textContent = text;
       popup.style.color = color;
-      popup.style.left = Math.max(10, Math.min(rect.width - 40, x - rect.left)) + 'px';
-      popup.style.top = Math.max(10, Math.min(rect.height - 40, y - rect.top)) + 'px';
+      popup.style.left = Math.max(10, Math.min(rect.width - 40, (x || (rect.left + rect.width / 2)) - rect.left)) + 'px';
+      popup.style.top = Math.max(10, Math.min(rect.height - 40, (y || (rect.top + rect.height / 2)) - rect.top)) + 'px';
       board.appendChild(popup);
       setTimeout(() => popup.remove(), 800);
     }
@@ -931,6 +1054,26 @@
       return arr;
     }
 
+    function checkDailyStreak() {
+      const today = new Date().toISOString().slice(0, 10);
+      const lastDate = localStorage.getItem('mfLastWorkoutDate');
+      let streak = parseInt(localStorage.getItem('mfDailyStreak') || '1');
+
+      if (lastDate && lastDate !== today) {
+        const prev = new Date(lastDate);
+        const curr = new Date(today);
+        const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) streak++;
+        else if (diffDays > 1) streak = 1;
+      }
+      localStorage.setItem('mfLastWorkoutDate', today);
+      localStorage.setItem('mfDailyStreak', streak.toString());
+
+      const numEl = document.getElementById('streakCountNum');
+      if (numEl) numEl.textContent = streak;
+    }
+    checkDailyStreak();
+
     function showToast(msg, title = 'MindForge', icon = '✨') {
       const toast = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;
@@ -988,7 +1131,7 @@
 
     function updateBrainXpUI() {
       const level = Math.floor(userXp / 500) + 1;
-      const titles = ['Novice', 'Apprentice', 'Mind Master', 'Neuro Prodigy', 'Legend'];
+      const titles = ['Novice', 'Apprentice', 'Mind Master', 'Neuro Prodigy', 'Grandmaster'];
       const title = titles[Math.min(level - 1, titles.length - 1)];
       const progressPct = Math.min(100, Math.max(0, ((userXp % 500) / 500) * 100));
 
@@ -1078,7 +1221,7 @@
     }
 
     /* ══════════════════════════════════════════════════
-       GAME SWITCHER & CONFIGS
+       GAME SWITCHER & CONFIGS (6 Games)
     ══════════════════════════════════════════════════ */
     const GAME_CONFIGS = {
       'number-rush': {
@@ -1131,6 +1274,16 @@
           '<span class="text-amber-400 font-bold">③</span> Sequence grows +1 each round',
           '<span class="text-purple-400 font-bold">④</span> Test visual & auditory memory'
         ]
+      },
+      'flexi-switch': {
+        name: 'Flexi Switch',
+        targetLabel: 'Correct Switches',
+        instructions: [
+          '<span class="text-cyan-400 font-bold">①</span> Executive task switching game',
+          '<span class="text-emerald-400 font-bold">②</span> Follow top rule banner (EVEN/ODD vs HIGH/LOW)',
+          '<span class="text-amber-400 font-bold">③</span> Tap correct decision button rapidly',
+          '<span class="text-purple-400 font-bold">④</span> Rule switches randomly every round!'
+        ]
       }
     };
 
@@ -1158,6 +1311,12 @@
       if (activeBadge) activeBadge.textContent = config.name;
       if (instList) instList.innerHTML = config.instructions.map(i => `<li class="flex items-start gap-1.5">${i}</li>`).join('');
 
+      const gridModeBox = document.getElementById('gridModeBox');
+      if (gridModeBox) {
+        if (gameId === 'number-rush') gridModeBox.classList.remove('hidden');
+        else gridModeBox.classList.add('hidden');
+      }
+
       updateStatsUI();
       initCurrentGame();
     }
@@ -1182,6 +1341,7 @@
       else if (currentGameId === 'color-clash') initColorClash();
       else if (currentGameId === 'speed-math') initSpeedMath();
       else if (currentGameId === 'sequence-recall') initSequenceRecall();
+      else if (currentGameId === 'flexi-switch') initFlexiSwitch();
     }
 
     function startTimer() {
@@ -1206,7 +1366,8 @@
       sessionStats.totalHits += currentHits;
       sessionStats.totalAttempts += attempts;
 
-      userXp += Math.round(currentScore * 0.8) + (won ? 50 : 10);
+      const gainedXp = Math.round(currentScore * 0.8) + (won ? 50 : 10);
+      userXp += gainedXp;
       localStorage.setItem('mfUserXp', userXp);
 
       const currentBest = bestScores[currentGameId] || 0;
@@ -1241,16 +1402,31 @@
       if (recentGames.length > 10) recentGames.pop();
       localStorage.setItem('mfRecentGames', JSON.stringify(recentGames));
 
+      /* Rank Calculation */
+      const accNum = attempts > 0 ? Math.round((currentHits / attempts) * 100) : 100;
+      const rankBadge = document.getElementById('gradeRankBadge');
+      if (currentScore >= 180 && accNum >= 90) {
+        rankBadge.textContent = '🌟 S+ RANK';
+        rankBadge.className = 'px-4 py-1 rounded-full text-sm sm:text-base font-black border uppercase tracking-widest inline-block shadow-lg bg-amber-500/20 text-amber-300 border-amber-400';
+      } else if (currentScore >= 120 && accNum >= 80) {
+        rankBadge.textContent = '🥇 A RANK';
+        rankBadge.className = 'px-4 py-1 rounded-full text-sm sm:text-base font-black border uppercase tracking-widest inline-block shadow-lg bg-emerald-500/20 text-emerald-300 border-emerald-400';
+      } else if (currentScore >= 70) {
+        rankBadge.textContent = '🥈 B RANK';
+        rankBadge.className = 'px-4 py-1 rounded-full text-sm sm:text-base font-black border uppercase tracking-widest inline-block shadow-lg bg-cyan-500/20 text-cyan-300 border-cyan-400';
+      } else {
+        rankBadge.textContent = '🥉 C RANK';
+        rankBadge.className = 'px-4 py-1 rounded-full text-sm sm:text-base font-black border uppercase tracking-widest inline-block shadow-lg bg-purple-500/20 text-purple-300 border-purple-400';
+      }
+
       overlayEmoji.textContent = won ? '🏆' : (currentScore > 100 ? '🌟' : '⏱️');
       overlayTitle.textContent = won ? 'Game Cleared!' : "Time's Up!";
-      overlaySub.textContent = won ? `Great job in ${GAME_CONFIGS[currentGameId].name}!` : `You hit ${currentScore} pts. Try again!`;
+      overlaySub.textContent = won ? `Great job in ${GAME_CONFIGS[currentGameId].name}! (+${gainedXp} XP)` : `You hit ${currentScore} pts. Try again!`;
       
       finalScore.textContent = currentScore;
       finalBest.textContent  = bestScores[currentGameId] || 0;
       finalCorrect.textContent = currentHits;
-      
-      const acc = attempts > 0 ? Math.round((currentHits / attempts) * 100) : 100;
-      finalAccuracy.textContent = acc + '%';
+      finalAccuracy.textContent = accNum + '%';
       finalCombo.textContent = 'x' + maxCombo;
       finalTime.textContent = (gameTime - timeLeft) + 's';
 
@@ -1443,6 +1619,16 @@
     /* ══════════════════════════════════════════════════
        GAME 3: COLOR CLASH
     ══════════════════════════════════════════════════ */
+    const COLOR_NAMES = ['RED', 'BLUE', 'GREEN', 'YELLOW', 'PURPLE', 'ORANGE'];
+    const COLOR_CODES = {
+      RED: '#EF4444',
+      BLUE: '#3B82F6',
+      GREEN: '#10B981',
+      YELLOW: '#F59E0B',
+      PURPLE: '#8B5CF6',
+      ORANGE: '#F97316'
+    };
+
     let currentStroopMatch = false;
 
     function initColorClash() {
@@ -1685,6 +1871,89 @@
     }
 
     /* ══════════════════════════════════════════════════
+       GAME 6: FLEXI SWITCH (EXECUTIVE TASK SWITCHING)
+    ══════════════════════════════════════════════════ */
+    let flexiCurrentRule = 'even_odd'; // 'even_odd' or 'high_low'
+    let flexiNumberVal   = 5;
+    let flexiCorrectOpt  = 1;
+
+    function initFlexiSwitch() {
+      totalTarget = 15;
+      nextEl.textContent = '0';
+      updateProgress(0, totalTarget);
+      gameActive = true;
+      generateFlexiQuestion();
+      startTimer();
+    }
+
+    function generateFlexiQuestion() {
+      flexiCurrentRule = Math.random() > 0.5 ? 'even_odd' : 'high_low';
+      flexiNumberVal   = Math.floor(Math.random() * 9) + 1; // 1 to 9
+
+      const badge = document.getElementById('flexiRuleBadge');
+      const numEl = document.getElementById('flexiNumber');
+      const btn1  = document.getElementById('flexiBtn1');
+      const btn2  = document.getElementById('flexiBtn2');
+
+      numEl.textContent = flexiNumberVal;
+
+      if (flexiCurrentRule === 'even_odd') {
+        badge.textContent = 'RULE: EVEN OR ODD?';
+        badge.className = 'px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg border border-cyan-400/40 bg-cyan-500/20 text-cyan-300 animate-fade-in';
+        btn1.textContent = 'EVEN';
+        btn2.textContent = 'ODD';
+
+        flexiCorrectOpt = (flexiNumberVal % 2 === 0) ? 1 : 2;
+      } else {
+        badge.textContent = 'RULE: HIGH (>5) OR LOW (<5)?';
+        badge.className = 'px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg border border-purple-400/40 bg-purple-500/20 text-purple-300 animate-fade-in';
+        btn1.textContent = 'HIGH (>5)';
+        btn2.textContent = 'LOW (≤5)';
+
+        flexiCorrectOpt = (flexiNumberVal > 5) ? 1 : 2;
+      }
+    }
+
+    function handleFlexiChoice(opt, e) {
+      if (!gameActive) return;
+      attempts++;
+
+      if (opt === flexiCorrectOpt) {
+        currentHits++;
+        comboCount++;
+        maxCombo = Math.max(maxCombo, comboCount);
+        updateComboUI();
+
+        const pts = 12 + comboCount * 2;
+        currentScore += pts;
+        scoreEl.textContent = currentScore;
+        nextEl.textContent = currentHits;
+
+        SoundFX.playHit(comboCount);
+        updateProgress(currentHits, totalTarget);
+
+        if (e && e.clientX) spawnFloatScore(e.clientX, e.clientY, `+${pts}`, '#10B981');
+
+        if (currentHits >= totalTarget) {
+          endGame(true);
+          return;
+        }
+
+        flashMessage('Agile!', '#10b981');
+      } else {
+        comboCount = 0;
+        updateComboUI();
+        currentScore = Math.max(0, currentScore - 5);
+        scoreEl.textContent = currentScore;
+        SoundFX.playMiss();
+        if (e && e.clientX) spawnFloatScore(e.clientX, e.clientY, `-5`, '#EF4444');
+        flashMessage('Wrong Switch!', '#ef4444');
+      }
+
+      generateFlexiQuestion();
+    }
+
+    /* ══════════════════════════════════════════════════
        HOTKEYS & LISTENERS
     ══════════════════════════════════════════════════ */
     document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -1694,7 +1963,6 @@
         
         gameTime = parseInt(btn.dataset.time);
         diffLabel = btn.dataset.label;
-        document.getElementById('diffLabel').textContent = diffLabel;
         
         initCurrentGame();
       });
