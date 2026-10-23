@@ -142,6 +142,36 @@
       .diff-btn { font-size: 9px !important; padding: 2px 5px !important; }
     }
 
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    /* Viewport-Aware Board Arena: Guarantees 100% complete visibility with zero cut-off */
+    #boardArena {
+      width: 100%;
+      max-width: min(430px, calc(100dvh - 230px));
+      max-height: min(430px, calc(100dvh - 230px));
+      aspect-ratio: 1 / 1;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (min-width: 1536px) {
+      #boardArena {
+        max-width: min(500px, calc(100dvh - 250px));
+        max-height: min(500px, calc(100dvh - 250px));
+      }
+    }
+    @media (max-width: 640px) {
+      #boardArena {
+        width: 100%;
+        max-width: min(92vw, calc(100dvh - 230px));
+        max-height: min(92vw, calc(100dvh - 230px));
+        min-width: 175px;
+        min-height: 175px;
+      }
+    }
+
     .bg-particle {
       position: fixed; border-radius: 50%; pointer-events: none;
       animation: floatUp linear infinite; z-index: 0; filter: blur(2px);
@@ -260,7 +290,7 @@
 <body class="min-h-screen flex flex-col justify-between">
 
   <!-- Background Particles -->
-  <div id="particles" class="pointer-events-none" aria-hidden="true"></div>
+  <div id="particles" class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true"></div>
 
   <!-- Confetti Canvas -->
   <canvas id="confettiCanvas"></canvas>
@@ -275,100 +305,133 @@
   </div>
 
   <!-- ════ HEADER (INTEGRATED GAME TABS) ════ -->
-  <header class="w-full glass-card border-b border-white/10 px-3 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl">
+  <header class="w-full glass-card border-b border-white/10 px-2 sm:px-4 xl:px-6 py-1.5 sm:py-2 flex items-center justify-between sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl">
     
     <!-- Left Logo -->
-    <div class="flex items-center gap-2 sm:gap-4">
-      <a href="#" onclick="openGameVault(); return false;" class="flex items-center gap-2 group">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-lg font-black text-slate-950 shadow-md shadow-cyan-500/30 group-hover:scale-105 transition-transform shrink-0">
+    <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      <a href="#" onclick="openGameVault(); return false;" class="flex items-center gap-1.5 sm:gap-2 group">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 xl:w-9 xl:h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-sm sm:text-base xl:text-lg font-black text-slate-950 shadow-md shadow-cyan-500/30 group-hover:scale-105 transition-transform shrink-0">
           ⚡
         </div>
         <div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-black text-white text-base sm:text-xl tracking-tight leading-none font-mono">MINDFORGE</span>
-            <span class="px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[8px] sm:text-[9px] font-extrabold uppercase border border-cyan-500/40">4.0</span>
+          <div class="flex items-center gap-1">
+            <span class="hidden min-[280px]:inline font-black text-white text-xs sm:text-sm xl:text-lg tracking-tight leading-none font-mono">MINDFORGE</span>
+            <span class="hidden sm:inline-block px-1 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[8px] font-extrabold uppercase border border-cyan-500/40">4.0</span>
           </div>
         </div>
       </a>
     </div>
 
-    <!-- Center: Game Selector Tabs (6 Games) -->
-    <div class="hidden xl:flex items-center gap-1.5 glass-card rounded-2xl p-1.5 border border-white/10">
-      <button onclick="switchGame('number-rush')" id="tab-number-rush" class="game-tab-btn active min-h-[34px] px-3 py-1.5 rounded-xl text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 transition-all">
-        🔢 Number Rush
+    <!-- Center: Game Selector Tabs (6 Games on Desktop) -->
+    <div class="hidden xl:flex items-center gap-0.5 2xl:gap-1 glass-card rounded-2xl p-0.5 2xl:p-1 border border-white/10 shrink-0">
+      <button onclick="switchGame('number-rush')" id="tab-number-rush" class="game-tab-btn active min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
+        🔢 Number<span class="hidden 2xl:inline"> Rush</span>
       </button>
-      <button onclick="switchGame('memory-matrix')" id="tab-memory-matrix" class="game-tab-btn min-h-[34px] px-3 py-1.5 rounded-xl text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 transition-all">
-        🧩 Memory Matrix
+      <button onclick="switchGame('memory-matrix')" id="tab-memory-matrix" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
+        🧩 Memory<span class="hidden 2xl:inline"> Matrix</span>
       </button>
-      <button onclick="switchGame('color-clash')" id="tab-color-clash" class="game-tab-btn min-h-[34px] px-3 py-1.5 rounded-xl text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 transition-all">
-        🎨 Color Clash
+      <button onclick="switchGame('color-clash')" id="tab-color-clash" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
+        🎨 Color<span class="hidden 2xl:inline"> Clash</span>
       </button>
-      <button onclick="switchGame('speed-math')" id="tab-speed-math" class="game-tab-btn min-h-[34px] px-3 py-1.5 rounded-xl text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 transition-all">
-        ⚡ Speed Math
+      <button onclick="switchGame('speed-math')" id="tab-speed-math" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
+        ⚡ Speed<span class="hidden 2xl:inline"> Math</span>
       </button>
-      <button onclick="switchGame('sequence-recall')" id="tab-sequence-recall" class="game-tab-btn min-h-[34px] px-3 py-1.5 rounded-xl text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 transition-all">
-        🎵 Simon Recall
+      <button onclick="switchGame('sequence-recall')" id="tab-sequence-recall" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
+        🎵 Simon<span class="hidden 2xl:inline"> Recall</span>
       </button>
-      <button onclick="switchGame('flexi-switch')" id="tab-flexi-switch" class="game-tab-btn min-h-[34px] px-3 py-1.5 rounded-xl text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 transition-all">
-        🔀 Flexi Switch
+      <button onclick="switchGame('flexi-switch')" id="tab-flexi-switch" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
+        🔀 Flexi<span class="hidden 2xl:inline"> Switch</span>
       </button>
     </div>
 
-    <!-- Right Controls -->
-    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end max-w-[65%] sm:max-w-none">
-      <!-- Daily Challenge Circuit Button -->
-      <button onclick="startDailyCircuit()" class="hidden xxs:flex min-h-[34px] px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black text-[11px] sm:text-xs border border-amber-300 items-center gap-1 shadow-lg hover:scale-105 active:scale-95 transition-all">
-        ⚡ <span class="hidden xs:inline">Daily</span> Circuit
-      </button>
-
-      <!-- Vault Trigger -->
-      <button onclick="openGameVault()" class="xl:hidden min-h-[34px] px-2.5 py-1.5 rounded-xl glass-card text-[11px] sm:text-xs text-cyan-300 font-bold border border-cyan-400/40 flex items-center gap-1 hover:border-cyan-300 active:scale-95 transition-all">
-        🎮 <span class="hidden xxs:inline">Vault</span>
-      </button>
-
-      <!-- Theme Dropdown -->
-      <div class="relative">
-        <button id="themeBtn" onclick="toggleThemeDropdown()" class="min-h-[34px] px-2 sm:px-2.5 py-1.5 rounded-xl glass-card text-[11px] sm:text-xs text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400 active:scale-95 transition-all font-bold flex items-center gap-1">
-          🎨 <span class="hidden sm:inline">Theme</span>
+    <!-- Right Controls: Single Row Desktop & Mobile -->
+    <div class="flex items-center gap-1 sm:gap-1.5 xl:gap-2 shrink-0 flex-nowrap">
+      
+      <!-- Desktop Actions (hidden < xl) -->
+      <div class="hidden xl:flex items-center gap-1 2xl:gap-1.5 shrink-0 flex-nowrap">
+        <button onclick="startDailyCircuit()" class="min-h-[30px] 2xl:min-h-[34px] px-2 2xl:px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black text-[11px] 2xl:text-xs border border-amber-300 flex items-center gap-1 shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
+          ⚡ <span class="hidden 2xl:inline">Daily </span>Circuit
         </button>
-        <div id="themeMenu" class="hidden absolute right-0 mt-2 w-36 glass-card rounded-2xl p-1.5 border border-white/20 shadow-2xl z-50 flex flex-col gap-1 text-xs">
-          <button onclick="setTheme('cyan')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-cyan-300 hover:bg-white/10 font-bold text-[11px]">🩵 Cyber Cyan</button>
-          <button onclick="setTheme('synthwave')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-pink-400 hover:bg-white/10 font-bold text-[11px]">🩷 Synthwave</button>
-          <button onclick="setTheme('matrix')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-emerald-400 hover:bg-white/10 font-bold text-[11px]">🟢 Matrix</button>
-          <button onclick="setTheme('sunset')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-orange-400 hover:bg-white/10 font-bold text-[11px]">🔥 Sunset Neon</button>
-          <button onclick="setTheme('obsidian')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-amber-300 hover:bg-white/10 font-bold text-[11px]">⚡ Obsidian Gold</button>
+
+        <!-- Theme Dropdown Desktop -->
+        <div class="relative shrink-0">
+          <button id="themeBtn" onclick="toggleThemeDropdown()" class="min-h-[30px] 2xl:min-h-[34px] px-2 2xl:px-2.5 py-1 rounded-xl glass-card text-[11px] 2xl:text-xs text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400 active:scale-95 transition-all font-bold flex items-center gap-1">
+            🎨<span class="hidden 2xl:inline"> Theme</span>
+          </button>
+          <div id="themeMenu" class="hidden absolute right-0 mt-2 w-36 glass-card rounded-2xl p-1.5 border border-white/20 shadow-2xl z-50 flex flex-col gap-1 text-xs">
+            <button onclick="setTheme('cyan')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-cyan-300 hover:bg-white/10 font-bold text-[11px]">🩵 Cyber Cyan</button>
+            <button onclick="setTheme('synthwave')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-pink-400 hover:bg-white/10 font-bold text-[11px]">🩷 Synthwave</button>
+            <button onclick="setTheme('matrix')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-emerald-400 hover:bg-white/10 font-bold text-[11px]">🟢 Matrix</button>
+            <button onclick="setTheme('sunset')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-orange-400 hover:bg-white/10 font-bold text-[11px]">🔥 Sunset Neon</button>
+            <button onclick="setTheme('obsidian')" class="w-full text-left px-2.5 py-1.5 rounded-xl text-amber-300 hover:bg-white/10 font-bold text-[11px]">⚡ Obsidian Gold</button>
+          </div>
+        </div>
+
+        <button id="hintToggle" title="Toggle Hint Highlight (H)" class="min-h-[30px] 2xl:min-h-[34px] flex items-center gap-1 px-2 2xl:px-2.5 py-1 rounded-xl glass-card text-[11px] 2xl:text-xs text-cyan-300 hover:text-white border border-white/10 hover:border-cyan-400/50 active:scale-95 transition-all font-bold shrink-0">
+          💡<span class="hidden 2xl:inline"> Hint</span>
+          <span id="hintStatus" class="w-2 2xl:w-2.5 h-2 2xl:h-2.5 rounded-full bg-cyan-400 border-2 border-cyan-200 inline-block"></span>
+        </button>
+
+        <button id="musicToggle" onclick="AmbientSynth.toggle()" title="Toggle Ambient Synth Music (M)" class="min-h-[30px] 2xl:min-h-[34px] px-2 2xl:px-2.5 py-1 rounded-xl glass-card text-[11px] 2xl:text-xs text-purple-300 hover:text-white border border-white/10 hover:border-purple-400/50 active:scale-95 transition-all font-bold flex items-center gap-1 shrink-0">
+          🎵<span class="hidden 2xl:inline"> Music</span>
+        </button>
+
+        <button id="soundToggle" title="Toggle Sound FX (S)" class="w-8 h-8 rounded-xl glass-card text-cyan-300 hover:text-white border border-white/10 hover:border-cyan-400/50 active:scale-95 transition-all flex items-center justify-center text-xs shrink-0">
+          🔊
+        </button>
+
+        <button onclick="openHotkeyModal()" title="Keyboard Controls Guide (?)" class="w-8 h-8 rounded-xl glass-card text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/50 active:scale-95 transition-all flex items-center justify-center text-xs font-bold shrink-0">
+          ⌨️
+        </button>
+      </div>
+
+      <!-- Mobile / Tablet Actions (< xl) - Sleek & Ultra Compact -->
+      <div class="flex xl:hidden items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap">
+        <button onclick="startDailyCircuit()" class="min-h-[30px] sm:min-h-[32px] px-2 sm:px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black text-[11px] border border-amber-300 flex items-center gap-1 shadow-md active:scale-95 transition-all shrink-0" title="Daily Circuit">
+          ⚡<span class="hidden md:inline"> Circuit</span>
+        </button>
+
+        <button onclick="openGameVault()" class="min-h-[30px] sm:min-h-[32px] px-2 sm:px-2.5 py-1 rounded-xl glass-card text-[11px] text-cyan-300 font-bold border border-cyan-400/40 flex items-center gap-1 hover:border-cyan-300 active:scale-95 transition-all shrink-0" title="Games Vault">
+          🎮<span class="hidden md:inline"> Games</span>
+        </button>
+
+        <!-- Quick Settings Gear on Mobile -->
+        <div class="relative shrink-0">
+          <button id="quickSettingsBtn" onclick="toggleMobileSettings()" class="w-8 h-8 rounded-xl glass-card text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400 active:scale-95 transition-all flex items-center justify-center text-xs shrink-0" title="Settings & Audio">
+            ⚙️
+          </button>
+          <!-- Mobile Settings Menu Dropdown -->
+          <div id="mobileSettingsMenu" class="hidden absolute right-0 mt-2 w-52 glass-card rounded-2xl p-2.5 border border-white/20 shadow-2xl z-50 flex flex-col gap-2 text-xs">
+            <div class="flex items-center justify-between px-2 py-1.5 rounded-xl hover:bg-white/5 cursor-pointer transition-colors" onclick="document.getElementById('hintToggle').click(); syncMobileSettingsUI();">
+              <span class="flex items-center gap-1.5 text-slate-200 font-bold">💡 Hint Highlight</span>
+              <span id="hintStatusMob" class="w-2.5 h-2.5 rounded-full bg-cyan-400 border-2 border-cyan-200 inline-block"></span>
+            </div>
+            <div class="flex items-center justify-between px-2 py-1.5 rounded-xl hover:bg-white/5 cursor-pointer transition-colors" onclick="AmbientSynth.toggle(); syncMobileSettingsUI();">
+              <span class="flex items-center gap-1.5 text-purple-300 font-bold">🎵 Synth Music</span>
+              <span id="musicStatusMob" class="text-[10px] font-bold text-slate-400">OFF</span>
+            </div>
+            <div class="flex items-center justify-between px-2 py-1.5 rounded-xl hover:bg-white/5 cursor-pointer transition-colors" onclick="document.getElementById('soundToggle').click(); syncMobileSettingsUI();">
+              <span class="flex items-center gap-1.5 text-cyan-300 font-bold">🔊 Sound Effects</span>
+              <span id="soundStatusMob" class="text-[10px] font-bold text-emerald-400">ON</span>
+            </div>
+            <div class="pt-1.5 border-t border-white/10">
+              <p class="text-[9px] uppercase tracking-wider text-slate-400 px-2 font-bold mb-1">Color Theme</p>
+              <div class="grid grid-cols-2 gap-1 px-1">
+                <button onclick="setTheme('cyan'); toggleMobileSettings();" class="text-left px-2 py-1 rounded-lg text-cyan-300 hover:bg-white/10 text-[10px] font-bold">🩵 Cyan</button>
+                <button onclick="setTheme('synthwave'); toggleMobileSettings();" class="text-left px-2 py-1 rounded-lg text-pink-400 hover:bg-white/10 text-[10px] font-bold">🩷 Synth</button>
+                <button onclick="setTheme('matrix'); toggleMobileSettings();" class="text-left px-2 py-1 rounded-lg text-emerald-400 hover:bg-white/10 text-[10px] font-bold">🟢 Matrix</button>
+                <button onclick="setTheme('sunset'); toggleMobileSettings();" class="text-left px-2 py-1 rounded-lg text-orange-400 hover:bg-white/10 text-[10px] font-bold">🔥 Sunset</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Hint Toggle -->
-      <button id="hintToggle" title="Toggle Hint Highlight (H)"
-        class="min-h-[34px] flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl glass-card text-[11px] sm:text-xs text-cyan-300 hover:text-white border border-white/10 hover:border-cyan-400/50 active:scale-95 transition-all font-bold">
-        💡 <span class="hidden sm:inline">Hint</span>
-        <span id="hintStatus" class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-cyan-400 border-2 border-cyan-200 inline-block"></span>
-      </button>
-
-      <!-- Ambient Music Toggle (hidden on tiny screens) -->
-      <button id="musicToggle" onclick="AmbientSynth.toggle()" title="Toggle Ambient Synth Music (M)"
-        class="hidden xs:flex min-h-[34px] px-2.5 py-1.5 rounded-xl glass-card text-[11px] sm:text-xs text-purple-300 hover:text-white border border-white/10 hover:border-purple-400/50 active:scale-95 transition-all font-bold items-center gap-1">
-        🎵 <span class="hidden sm:inline">Music</span>
-      </button>
-
-      <!-- Sound Toggle -->
-      <button id="soundToggle" title="Toggle Sound FX (S)"
-        class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl glass-card text-cyan-300 hover:text-white border border-white/10 hover:border-cyan-400/50 active:scale-95 transition-all flex items-center justify-center text-xs sm:text-sm shrink-0">
-        🔊
-      </button>
-
-      <!-- Hotkey Guide (hidden on tiny screens) -->
-      <button onclick="openHotkeyModal()" title="Keyboard Controls Guide (?)"
-        class="hidden xs:flex w-8 h-8 sm:w-9 sm:h-9 rounded-xl glass-card text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/50 active:scale-95 transition-all items-center justify-center text-xs sm:text-sm font-bold shrink-0">
-        ⌨️
-      </button>
-
-      <!-- Global Rank XP -->
-      <div class="min-h-[34px] flex items-center gap-1 px-2.5 py-1 rounded-xl glass-card border border-amber-500/30 text-amber-400 text-[11px] sm:text-xs font-black shrink-0" title="Brain XP">
+      <!-- Global Rank XP (Always single line on both mobile & desktop) -->
+      <div class="min-h-[30px] sm:min-h-[34px] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl glass-card border border-amber-500/30 text-amber-400 text-[10px] sm:text-xs font-black shrink-0 flex items-center gap-1" title="Brain XP">
         🏆 <span id="navBest">0</span>
       </div>
+
     </div>
   </header>
 
@@ -554,8 +617,8 @@
 
       </div>
 
-      <!-- PERFECT FIT BOARD ARENA CONTAINER (Scales smoothly up to 2K & 4K screens) -->
-      <div id="boardArena" class="w-full max-w-[480px] 2xl:max-w-[540px] 3xl:max-w-[600px] mx-auto glass-card rounded-3xl p-3 xxs:p-4 sm:p-5 shadow-2xl relative border border-white/15 overflow-hidden flex flex-col items-center justify-center">
+      <!-- PERFECT FIT BOARD ARENA CONTAINER (Guaranteed 100% visible on all viewports) -->
+      <div id="boardArena" class="mx-auto glass-card rounded-3xl p-2.5 xxs:p-3 sm:p-5 shadow-2xl relative border border-white/15 overflow-hidden flex flex-col items-center justify-center">
         <div id="boardContainer" class="w-full h-full flex flex-col items-center justify-center relative">
           
           <!-- Game 1: Number Rush Grid -->
@@ -693,29 +756,33 @@
   </div>
 
   <!-- ════ FOOTER DASHBOARD (MOBILE & TABLET ONLY) ════ -->
-  <footer class="w-full max-w-5xl mx-auto px-3 sm:px-6 py-3 border-t border-white/10 mt-auto xl:hidden">
-    <div class="grid grid-cols-2 sm:grid-cols-2 gap-2.5">
+  <footer class="w-full max-w-xl mx-auto px-3 sm:px-6 py-2 border-t border-white/10 mt-auto xl:hidden">
+    <div class="grid grid-cols-2 gap-2">
       
-      <div class="glass-card rounded-xl p-3 border border-white/10">
-        <h3 class="text-[9px] font-black text-cyan-300 uppercase tracking-widest mb-1.5">Stats</h3>
+      <!-- Card 1: Session Stats (Clean, No-Wrap Layout) -->
+      <div class="glass-card rounded-2xl p-2.5 border border-white/10">
+        <h3 class="text-[9px] font-black text-cyan-300 uppercase tracking-widest mb-1">Session Stats</h3>
         <div class="grid grid-cols-2 gap-1 text-center">
           <div class="glass-card rounded-lg p-1 border border-white/5">
             <p class="text-sm font-black text-white" id="sessGamesMob">0</p>
-            <p class="text-[8px] text-slate-400 uppercase font-semibold">Games</p>
+            <p class="text-[8px] text-slate-400 uppercase font-bold tracking-tight">Games</p>
           </div>
           <div class="glass-card rounded-lg p-1 border border-white/5">
             <p class="text-sm font-black text-amber-400" id="sessBestMob">0</p>
-            <p class="text-[8px] text-slate-400 uppercase font-semibold">Best</p>
+            <p class="text-[8px] text-slate-400 uppercase font-bold tracking-tight">Best</p>
           </div>
         </div>
       </div>
 
-      <div class="glass-card rounded-xl p-3 border border-white/10">
-        <h3 class="text-[9px] font-black text-cyan-300 uppercase tracking-widest mb-1">Hotkeys</h3>
-        <div class="space-y-0.5 text-[10px] text-slate-300 font-medium">
-          <p><kbd class="px-1 py-0.2 rounded bg-slate-800 border border-white/20 text-[8px] font-mono">1-3</kbd> Difficulty</p>
-          <p><kbd class="px-1 py-0.2 rounded bg-slate-800 border border-white/20 text-[8px] font-mono">H</kbd> Hint</p>
-          <p><kbd class="px-1 py-0.2 rounded bg-slate-800 border border-white/20 text-[8px] font-mono">Space</kbd> Restart</p>
+      <!-- Card 2: Brain Level & Streak Progress (Meaningful RPG progression instead of redundant hotkeys) -->
+      <div class="glass-card rounded-2xl p-2.5 border border-white/10 flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-[9px] font-black text-amber-400 uppercase tracking-widest">Brain Level</h3>
+          <span id="dailyStreakTextMob" class="text-[9px] font-bold text-rose-400">🔥 <span id="streakCountNumMob">1</span>d</span>
+        </div>
+        <p id="userLevelTitleMob" class="text-[10px] font-extrabold text-cyan-300 truncate mb-1">Lvl 1: Novice</p>
+        <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden border border-white/10">
+          <div id="userXpBarMob" class="pbar h-1.5 rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-cyan-400" style="width: 20%"></div>
         </div>
       </div>
 
@@ -1218,6 +1285,8 @@
 
       const numEl = document.getElementById('streakCountNum');
       if (numEl) numEl.textContent = streak;
+      const numElMob = document.getElementById('streakCountNumMob');
+      if (numElMob) numElMob.textContent = streak;
     }
     checkDailyStreak();
 
@@ -1311,6 +1380,11 @@
       if (xpCurrentEl) xpCurrentEl.textContent = userXp;
       navBest.textContent = userXp;
 
+      const titleElMob = document.getElementById('userLevelTitleMob');
+      const xpBarElMob = document.getElementById('userXpBarMob');
+      if (titleElMob) titleElMob.textContent = `Lvl ${level}: ${title}`;
+      if (xpBarElMob) xpBarElMob.style.width = progressPct + '%';
+
       updateBrainSkillsUI();
     }
 
@@ -1379,16 +1453,45 @@
     function toggleThemeDropdown() {
       document.getElementById('themeMenu').classList.toggle('hidden');
     }
+
+    function toggleMobileSettings() {
+      const menu = document.getElementById('mobileSettingsMenu');
+      if (menu) menu.classList.toggle('hidden');
+      syncMobileSettingsUI();
+    }
+
+    function syncMobileSettingsUI() {
+      const hintDot = document.getElementById('hintStatusMob');
+      if (hintDot) {
+        hintDot.className = hintEnabled
+          ? 'w-2.5 h-2.5 rounded-full bg-cyan-400 border-2 border-cyan-200 inline-block'
+          : 'w-2.5 h-2.5 rounded-full bg-slate-500 border-2 border-slate-400 inline-block';
+      }
+      const musicStatus = document.getElementById('musicStatusMob');
+      if (musicStatus) {
+        musicStatus.textContent = AmbientSynth.playing ? 'ON' : 'OFF';
+        musicStatus.className = AmbientSynth.playing ? 'text-[10px] font-bold text-emerald-400' : 'text-[10px] font-bold text-slate-400';
+      }
+      const soundStatus = document.getElementById('soundStatusMob');
+      if (soundStatus) {
+        soundStatus.textContent = SoundFX.enabled ? 'ON' : 'OFF';
+        soundStatus.className = SoundFX.enabled ? 'text-[10px] font-bold text-emerald-400' : 'text-[10px] font-bold text-slate-400';
+      }
+    }
+
     function setTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
-      document.getElementById('themeMenu').classList.add('hidden');
+      const themeMenu = document.getElementById('themeMenu');
+      if (themeMenu) themeMenu.classList.add('hidden');
+      const mobileMenu = document.getElementById('mobileSettingsMenu');
+      if (mobileMenu) mobileMenu.classList.add('hidden');
       showToast(`Switched to ${themeName.toUpperCase()} theme!`, 'Theme', '🎨');
     }
 
     function setGridMode(num) {
       targetGridNum = num;
-      document.getElementById('grid-mode-25').className = num === 25 ? 'px-2 py-0.5 rounded-md glass-card text-cyan-300 font-bold border border-cyan-400/40 text-[10px] sm:text-xs' : 'px-2 py-0.5 rounded-md glass-card text-slate-400 font-bold border border-white/10 hover:text-white text-[10px] sm:text-xs';
-      document.getElementById('grid-mode-36').className = num === 36 ? 'px-2 py-0.5 rounded-md glass-card text-cyan-300 font-bold border border-cyan-400/40 text-[10px] sm:text-xs' : 'px-2 py-0.5 rounded-md glass-card text-slate-400 font-bold border border-white/10 hover:text-white text-[10px] sm:text-xs';
+      document.getElementById('grid-mode-25').className = num === 25 ? 'min-h-[34px] px-3 py-1.5 rounded-xl glass-card text-cyan-300 font-black border border-cyan-400/40 active:scale-95 transition-all text-xs' : 'min-h-[34px] px-3 py-1.5 rounded-xl glass-card text-slate-400 font-black border border-white/10 hover:text-white active:scale-95 transition-all text-xs';
+      document.getElementById('grid-mode-36').className = num === 36 ? 'min-h-[34px] px-3 py-1.5 rounded-xl glass-card text-cyan-300 font-black border border-cyan-400/40 active:scale-95 transition-all text-xs' : 'min-h-[34px] px-3 py-1.5 rounded-xl glass-card text-slate-400 font-black border border-white/10 hover:text-white active:scale-95 transition-all text-xs';
       if (currentGameId === 'number-rush') initCurrentGame();
     }
 
