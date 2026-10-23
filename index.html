@@ -55,6 +55,88 @@
     };
   </script>
   <style>
+    /* ── Critical Anti-FOUC (Flash of Unstyled Content) ── */
+    html {
+      background-color: #050714;
+      color: #f8fafc;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    .hidden, [hidden], 
+    #themeMenu.hidden, #mobileSettingsMenu.hidden, 
+    #gameVaultModal.hidden, #hotkeyModal.hidden, 
+    #circuitModal.hidden, #circuitStageModal.hidden, #circuitVictoryModal.hidden,
+    #overlay.hidden {
+      display: none !important;
+    }
+    #toast {
+      position: fixed !important;
+      bottom: 1rem !important;
+      right: 1rem !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: 50 !important;
+    }
+
+    /* Preloader Overlay */
+    .preloader-overlay {
+      position: fixed;
+      inset: 0;
+      background: #050714;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+    .preloader-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .preloader-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #00F2FE, #3B82F6, #8B5CF6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.45);
+      animation: pulsePreload 1.2s ease-in-out infinite alternate;
+    }
+    .preloader-title {
+      font-family: 'Space Grotesk', monospace, sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      color: #00F2FE;
+    }
+    .preloader-bar {
+      width: 110px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .preloader-progress {
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, #00F2FE, #ec4899);
+      border-radius: 99px;
+      animation: scanPreload 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulsePreload {
+      0% { transform: scale(0.95); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+      100% { transform: scale(1.05); box-shadow: 0 0 35px rgba(0, 242, 254, 0.7); }
+    }
+    @keyframes scanPreload {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+
     :root {
       --bg-main: #050714;
       --accent-color: #00F2FE;
@@ -289,8 +371,35 @@
 
   <!-- GSAP (GreenSock Animation Platform) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Preloader Controller -->
+  <script>
+    function dismissPreloader() {
+      const p = document.getElementById('appPreloader');
+      if (!p || p.dataset.dismissed) return;
+      p.dataset.dismissed = 'true';
+      if (window.gsap) {
+        gsap.to(p, { opacity: 0, duration: 0.35, ease: 'power2.out', onComplete: () => p.remove() });
+      } else {
+        p.style.opacity = '0';
+        setTimeout(() => p.remove(), 350);
+      }
+    }
+    window.addEventListener('DOMContentLoaded', () => setTimeout(dismissPreloader, 250));
+    window.addEventListener('load', () => setTimeout(dismissPreloader, 100));
+    setTimeout(dismissPreloader, 1000);
+  </script>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Instant Preloader Shield (Eliminates FOUC completely) -->
+  <div id="appPreloader" class="preloader-overlay">
+    <div class="preloader-card">
+      <div class="preloader-icon">⚡</div>
+      <div class="preloader-title">MINDFORGE 4.0</div>
+      <div class="preloader-bar"><div class="preloader-progress"></div></div>
+    </div>
+  </div>
 
   <!-- Background Particles -->
   <div id="particles" class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true"></div>

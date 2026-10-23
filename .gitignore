@@ -3,3 +3,5 @@ package-lock.json
 responsive-audit.js
 responsive-audit-report.json
 .DS_Store
+
+.vercel
