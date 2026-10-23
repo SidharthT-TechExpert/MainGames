@@ -1,7 +1,7 @@
 {
   "name": "mindforge-brain-games",
-  "version": "1.0.0",
-  "description": "MindForge — Ultimate Brain & Cognitive Games Hub containing Number Rush, Memory Matrix, Color Clash, Speed Math, and Simon Recall.",
+  "version": "4.0.0",
+  "description": "MindForge 4.0 — AAA Cyber Cognitive Arena containing Number Rush, Memory Matrix, Color Clash, Speed Math, Simon Recall, and Flexi Switch with Daily Circuit Workouts and Skill Profiles.",
   "main": "index.html",
   "scripts": {
     "start": "npx serve .",
@@ -15,6 +15,7 @@
     "stroop-effect",
     "speed-math",
     "simon-recall",
+    "flexi-switch",
     "vercel",
     "web-audio"
   ],
