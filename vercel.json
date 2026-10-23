@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "mindforge-games",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
