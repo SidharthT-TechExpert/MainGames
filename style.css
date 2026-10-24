@@ -13,9 +13,6 @@
     #overlay.hidden {
       display: none !important;
     }
-    .hidden {
-      display: none;
-    }
     #toast {
       position: fixed !important;
       bottom: 1rem !important;
