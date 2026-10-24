@@ -193,7 +193,6 @@
     *, *::before, *::after {
       font-family: 'Plus Jakarta Sans', sans-serif;
       box-sizing: border-box;
-      touch-action: manipulation;
     }
 
     body {
@@ -230,18 +229,19 @@
     html, body {
       overflow-x: hidden;
       max-width: 100vw;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-      touch-action: manipulation;
-      overscroll-behavior-y: none;
     }
 
-    button, a, .cell, [role="button"], input, select {
+    button, a, .cell, .diff-btn, .game-tab-btn, .simon-pad, [role="button"], input, select {
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
       touch-action: manipulation;
+      cursor: pointer;
+    }
+
+    button, a, .cell, .diff-btn, .game-tab-btn, .simon-pad, [role="button"],
+    #stroopWord, #flexiNumber, #matrixGrid, #grid, #simonBoard {
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     /* Viewport-Aware Board Arena: Guarantees 100% complete visibility with zero cut-off */
@@ -322,13 +322,17 @@
     }
 
     /* Ultra-responsive touch feedback (0ms visual press feedback on mobile & desktop) */
-    .cell:active:not(.used),
-    .cell.touch-active:not(.used) {
+    .cell:active:not(.used) {
       transform: scale(0.92) !important;
       background: rgba(0, 242, 254, 0.3) !important;
       border-color: var(--accent-color) !important;
       box-shadow: 0 0 15px var(--accent-glow) !important;
       transition: transform 0.03s ease-out !important;
+    }
+
+    .diff-btn:active, .game-tab-btn:active, .simon-pad:active {
+      transform: scale(0.95);
+      transition: transform 0.04s ease-out;
     }
 
     .cell.used { cursor: default; pointer-events: none; }
@@ -813,10 +817,10 @@
               <div id="stroopWord" class="text-4xl font-black tracking-wider drop-shadow-xl py-3 select-none font-mono">RED</div>
             </div>
             <div class="flex gap-3 w-full">
-              <button id="colorClashYesBtn" class="flex-1 py-3 bg-emerald-500/20 hover:bg-emerald-500/40 border-2 border-emerald-500/60 text-emerald-300 font-black rounded-xl text-base transition-all active:scale-95 shadow-lg select-none">
+              <button id="colorClashYesBtn" onclick="handleColorClash(true)" class="flex-1 py-3 bg-emerald-500/20 hover:bg-emerald-500/40 border-2 border-emerald-500/60 text-emerald-300 font-black rounded-xl text-base transition-all active:scale-95 shadow-lg select-none">
                 ✅ YES
               </button>
-              <button id="colorClashNoBtn" class="flex-1 py-3 bg-rose-500/20 hover:bg-rose-500/40 border-2 border-rose-500/60 text-rose-300 font-black rounded-xl text-base transition-all active:scale-95 shadow-lg select-none">
+              <button id="colorClashNoBtn" onclick="handleColorClash(false)" class="flex-1 py-3 bg-rose-500/20 hover:bg-rose-500/40 border-2 border-rose-500/60 text-rose-300 font-black rounded-xl text-base transition-all active:scale-95 shadow-lg select-none">
                 ❌ NO
               </button>
             </div>
@@ -835,10 +839,10 @@
           <div id="game-sequence-recall" class="game-view hidden w-full max-w-[300px] mx-auto flex flex-col items-center justify-center gap-2">
             <p id="sequenceStatus" class="text-xs font-bold text-cyan-300">Listen to sequence...</p>
             <div class="grid grid-cols-2 gap-2.5 w-full aspect-square">
-              <button id="simon-0" class="simon-pad rounded-2xl bg-rose-500/30 border-2 border-rose-500/60 hover:bg-rose-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🔴</button>
-              <button id="simon-1" class="simon-pad rounded-2xl bg-cyan-500/30 border-2 border-cyan-500/60 hover:bg-cyan-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🔵</button>
-              <button id="simon-2" class="simon-pad rounded-2xl bg-amber-500/30 border-2 border-amber-500/60 hover:bg-amber-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🟡</button>
-              <button id="simon-3" class="simon-pad rounded-2xl bg-emerald-500/30 border-2 border-emerald-500/60 hover:bg-emerald-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🟢</button>
+              <button id="simon-0" onclick="handleSimonClick(0)" class="simon-pad rounded-2xl bg-rose-500/30 border-2 border-rose-500/60 hover:bg-rose-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🔴</button>
+              <button id="simon-1" onclick="handleSimonClick(1)" class="simon-pad rounded-2xl bg-cyan-500/30 border-2 border-cyan-500/60 hover:bg-cyan-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🔵</button>
+              <button id="simon-2" onclick="handleSimonClick(2)" class="simon-pad rounded-2xl bg-amber-500/30 border-2 border-amber-500/60 hover:bg-amber-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🟡</button>
+              <button id="simon-3" onclick="handleSimonClick(3)" class="simon-pad rounded-2xl bg-emerald-500/30 border-2 border-emerald-500/60 hover:bg-emerald-500/50 transition-all active:scale-95 shadow-lg flex items-center justify-center text-3xl aspect-square select-none">🟢</button>
             </div>
           </div>
 
@@ -851,10 +855,10 @@
               <div id="flexiNumber" class="text-5xl sm:text-6xl font-black tracking-wider text-white font-mono select-none">7</div>
             </div>
             <div class="grid grid-cols-2 gap-3 w-full">
-              <button id="flexiBtn1" class="py-3 px-3 rounded-2xl glass-card border border-white/20 text-white font-black text-sm sm:text-lg hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all shadow-lg select-none">
+              <button id="flexiBtn1" onclick="handleFlexiChoice(1, event)" class="py-3 px-3 rounded-2xl glass-card border border-white/20 text-white font-black text-sm sm:text-lg hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all shadow-lg select-none">
                 EVEN
               </button>
-              <button id="flexiBtn2" class="py-3 px-3 rounded-2xl glass-card border border-white/20 text-white font-black text-sm sm:text-lg hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all shadow-lg select-none">
+              <button id="flexiBtn2" onclick="handleFlexiChoice(2, event)" class="py-3 px-3 rounded-2xl glass-card border border-white/20 text-white font-black text-sm sm:text-lg hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all shadow-lg select-none">
                 ODD
               </button>
             </div>
@@ -1333,29 +1337,8 @@
     }
 
     function attachFastTouch(el, callback) {
-      if (!el) return;
-      el.style.touchAction = 'manipulation';
-      let handledViaPointer = false;
-
-      el.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        handledViaPointer = true;
-        el.classList.add('touch-active');
-        callback(e);
-      }, { passive: true });
-
-      const clearActive = () => el.classList.remove('touch-active');
-      el.addEventListener('pointerup', clearActive, { passive: true });
-      el.addEventListener('pointercancel', clearActive, { passive: true });
-      el.addEventListener('pointerleave', clearActive, { passive: true });
-
-      el.addEventListener('click', (e) => {
-        if (handledViaPointer) {
-          handledViaPointer = false;
-          return;
-        }
-        callback(e);
-      });
+      if (!el || typeof callback !== 'function') return;
+      el.addEventListener('click', callback);
     }
 
     /* ══════════════════════════════════════════════════
@@ -1576,13 +1559,16 @@
     ══════════════════════════════════════════════════ */
     function spawnFloatScore(x, y, text, color = '#10B981') {
       const board = document.getElementById('boardArena');
+      if (!board) return;
       const rect = board.getBoundingClientRect();
       const popup = document.createElement('div');
       popup.className = 'float-score-popup text-sm sm:text-base';
       popup.textContent = text;
       popup.style.color = color;
-      popup.style.left = Math.max(10, Math.min(rect.width - 40, (x || (rect.left + rect.width / 2)) - rect.left)) + 'px';
-      popup.style.top = Math.max(10, Math.min(rect.height - 40, (y || (rect.top + rect.height / 2)) - rect.top)) + 'px';
+      const posX = (x != null && !isNaN(x)) ? x : (rect.left + rect.width / 2);
+      const posY = (y != null && !isNaN(y)) ? y : (rect.top + rect.height / 2);
+      popup.style.left = Math.max(10, Math.min(rect.width - 40, posX - rect.left)) + 'px';
+      popup.style.top = Math.max(10, Math.min(rect.height - 40, posY - rect.top)) + 'px';
       board.appendChild(popup);
       setTimeout(() => popup.remove(), 800);
     }
@@ -2420,7 +2406,7 @@
         cell.dataset.num = num;
         cell.textContent = num;
 
-        attachFastTouch(cell, (e) => handleNumberRushClick(cell, num, e));
+        cell.addEventListener('click', (e) => handleNumberRushClick(cell, num, e));
 
         grid.appendChild(cell);
       });
@@ -2471,7 +2457,7 @@
         cell.classList.remove('next-hint');
         updateProgress(currentHits, totalTarget);
 
-        spawnFloatScore(e.clientX, e.clientY, `+${pts}`, '#10B981');
+        spawnFloatScore(e ? e.clientX : null, e ? e.clientY : null, `+${pts}`, '#10B981');
 
         if (currentHits === totalTarget) {
           endGame(true);
@@ -2495,7 +2481,7 @@
         cell.classList.add('wrong');
         setTimeout(() => cell.classList.remove('wrong'), 400);
 
-        spawnFloatScore(e.clientX, e.clientY, `-5`, '#EF4444');
+        spawnFloatScore(e ? e.clientX : null, e ? e.clientY : null, `-5`, '#EF4444');
       }
     }
 
@@ -2547,7 +2533,7 @@
       setTimeout(() => {
         document.querySelectorAll('#matrixGrid .cell').forEach(c => {
           c.classList.remove('active-pattern');
-          attachFastTouch(c, (e) => handleMatrixClick(c, parseInt(c.dataset.index), e));
+          c.addEventListener('click', (e) => handleMatrixClick(c, parseInt(c.dataset.index), e));
         });
         status.textContent = 'Recall and tap the tiles!';
         gameActive = true;
@@ -2573,7 +2559,7 @@
         scoreEl.textContent = currentScore;
         updateProgress(userSelectedTiles.length, tileCount);
 
-        spawnFloatScore(e.clientX, e.clientY, `+15`, '#10B981');
+        spawnFloatScore(e ? e.clientX : null, e ? e.clientY : null, `+15`, '#10B981');
 
         if (userSelectedTiles.length === tileCount) {
           matrixRound++;
@@ -2588,7 +2574,7 @@
           gsap.to(cell, { x: [-8, 8, -6, 6, -3, 3, 0], duration: 0.35, ease: 'power2.out' });
         }
         SoundFX.playMiss();
-        spawnFloatScore(e.clientX, e.clientY, `MISS`, '#EF4444');
+        spawnFloatScore(e ? e.clientX : null, e ? e.clientY : null, `MISS`, '#EF4444');
       }
     }
 
@@ -2724,7 +2710,7 @@
         const btn = document.createElement('button');
         btn.className = 'py-2.5 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl glass-card border border-white/20 text-white font-black text-base sm:text-xl hover:bg-cyan-500/30 hover:border-cyan-400 active:scale-95 transition-all font-mono select-none';
         btn.textContent = ch;
-        attachFastTouch(btn, (e) => handleMathChoice(ch, e));
+        btn.addEventListener('click', (e) => handleMathChoice(ch, e));
         optsContainer.appendChild(btn);
       });
     }
@@ -2970,24 +2956,8 @@
     window.addEventListener('pointerdown', unlockAudio, { once: true, passive: true });
     window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
 
-    // Setup Fast Touch for Static Game Buttons (0ms Touch Response)
-    const clashYes = document.getElementById('colorClashYesBtn');
-    if (clashYes) attachFastTouch(clashYes, () => handleColorClash(true));
-    const clashNo = document.getElementById('colorClashNoBtn');
-    if (clashNo) attachFastTouch(clashNo, () => handleColorClash(false));
-
-    [0, 1, 2, 3].forEach(idx => {
-      const pad = document.getElementById('simon-' + idx);
-      if (pad) attachFastTouch(pad, () => handleSimonClick(idx));
-    });
-
-    const fBtn1 = document.getElementById('flexiBtn1');
-    if (fBtn1) attachFastTouch(fBtn1, (e) => handleFlexiChoice(1, e));
-    const fBtn2 = document.getElementById('flexiBtn2');
-    if (fBtn2) attachFastTouch(fBtn2, (e) => handleFlexiChoice(2, e));
-
     document.querySelectorAll('.diff-btn').forEach(btn => {
-      attachFastTouch(btn, () => {
+      btn.addEventListener('click', () => {
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         
