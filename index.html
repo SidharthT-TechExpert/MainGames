@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>MindForge 4.0 — AAA Cyber Cognitive Arena</title>
+  <title>MindForge — Your daily mental workout</title>
   <meta name="description" content="Ultimate Cyber Brain Training Hub. Play Number Rush, Memory Matrix, Color Clash, Speed Math, Simon Recall, and Flexi Switch with Daily Circuit Workouts and Skill Profiles!" />
   
   <!-- Fonts -->
@@ -411,6 +411,9 @@
     ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 4px; }
   </style>
 
+  <!-- Visual system, after the legacy base styles. -->
+  <link rel="stylesheet" href="design.css" />
+
   <!-- GSAP (GreenSock Animation Platform) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
@@ -432,7 +435,8 @@
     setTimeout(dismissPreloader, 800);
   </script>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="mindforge-app min-h-screen flex flex-col justify-between">
+  <a class="skip-link" href="#playArea">Skip to game</a>
 
   <!-- Instant Preloader Shield (Eliminates FOUC completely) -->
   <div id="appPreloader" class="preloader-overlay">
@@ -459,44 +463,24 @@
   </div>
 
   <!-- ════ HEADER (INTEGRATED GAME TABS) ════ -->
-  <header class="w-full glass-card border-b border-white/10 px-2 sm:px-4 xl:px-6 py-1.5 sm:py-2 flex items-center justify-between sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl">
+  <header class="app-header w-full glass-card border-b border-white/10 px-2 sm:px-4 xl:px-6 py-1.5 sm:py-2 flex items-center justify-between sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl">
     
     <!-- Left Logo -->
     <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-      <a href="#" onclick="openGameVault(); return false;" class="flex items-center gap-1.5 sm:gap-2 group">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 xl:w-9 xl:h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-sm sm:text-base xl:text-lg font-black text-slate-950 shadow-md shadow-cyan-500/30 group-hover:scale-105 transition-transform shrink-0">
-          ⚡
+      <a href="#" onclick="openGameVault(); return false;" aria-label="MindForge game library" class="brand flex items-center gap-1.5 sm:gap-2 group">
+        <div class="brand-mark w-7 h-7 sm:w-8 sm:h-8 xl:w-9 xl:h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-sm sm:text-base xl:text-lg font-black text-slate-950 shadow-md shadow-cyan-500/30 group-hover:scale-105 transition-transform shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M4 17V7l8 7 8-7v10M4 7l8-4 8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div>
           <div class="flex items-center gap-1">
-            <span class="hidden min-[280px]:inline font-black text-white text-xs sm:text-sm xl:text-lg tracking-tight leading-none font-mono">MINDFORGE</span>
-            <span class="hidden sm:inline-block px-1 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[8px] font-extrabold uppercase border border-cyan-500/40">4.0</span>
+            <span class="brand-name hidden min-[280px]:inline font-black text-white text-xs sm:text-sm xl:text-lg tracking-tight leading-none font-mono">mindforge<span class="brand-dot">.</span></span>
+            <span class="brand-edition hidden sm:inline-block">PLAY / GROW</span>
           </div>
         </div>
       </a>
     </div>
 
-    <!-- Center: Game Selector Tabs (6 Games on Desktop) -->
-    <div class="hidden xl:flex items-center gap-0.5 2xl:gap-1 glass-card rounded-2xl p-0.5 2xl:p-1 border border-white/10 shrink-0">
-      <button onclick="switchGame('number-rush')" id="tab-number-rush" class="game-tab-btn active min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
-        🔢 Number<span class="hidden 2xl:inline"> Rush</span>
-      </button>
-      <button onclick="switchGame('memory-matrix')" id="tab-memory-matrix" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
-        🧩 Memory<span class="hidden 2xl:inline"> Matrix</span>
-      </button>
-      <button onclick="switchGame('color-clash')" id="tab-color-clash" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
-        🎨 Color<span class="hidden 2xl:inline"> Clash</span>
-      </button>
-      <button onclick="switchGame('speed-math')" id="tab-speed-math" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
-        ⚡ Speed<span class="hidden 2xl:inline"> Math</span>
-      </button>
-      <button onclick="switchGame('sequence-recall')" id="tab-sequence-recall" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
-        🎵 Simon<span class="hidden 2xl:inline"> Recall</span>
-      </button>
-      <button onclick="switchGame('flexi-switch')" id="tab-flexi-switch" class="game-tab-btn min-h-[30px] 2xl:min-h-[32px] px-2 2xl:px-2.5 py-1 rounded-xl text-[11px] 2xl:text-xs font-extrabold border border-transparent text-slate-300 hover:text-white flex items-center gap-1 transition-all">
-        🔀 Flexi<span class="hidden 2xl:inline"> Switch</span>
-      </button>
-    </div>
+    <span class="header-caption">A little play. A sharper you.</span>
 
     <!-- Right Controls: Single Row Desktop & Mobile -->
     <div class="flex items-center gap-1 sm:gap-1.5 xl:gap-2 shrink-0 flex-nowrap">
@@ -589,8 +573,41 @@
     </div>
   </header>
 
-  <!-- ════ LUXURIOUS 3-COLUMN DESKTOP DASHBOARD ════ -->
-  <div class="w-full max-w-7xl mx-auto px-2 xxs:px-4 xl:px-8 py-2 sm:py-4 flex-1 flex flex-col xl:flex-row items-center xl:items-start justify-center xl:justify-between gap-4 sm:gap-6">
+  <section class="welcome-banner" aria-labelledby="welcomeTitle">
+    <div class="welcome-copy">
+      <p class="eyebrow"><span class="status-dot"></span> YOUR DAILY MENTAL WORKOUT</p>
+      <h1 id="welcomeTitle">Small games.<br> <span>Sharper mind.</span></h1>
+      <p class="welcome-description">Find your focus. Challenge your memory. Make every round count.</p>
+      <a class="play-link" href="#playArea" onclick="initCurrentGame()">Play now <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="mind-art" aria-hidden="true">
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="art-core">m<span>.</span></div>
+      <span class="art-tile art-tile-one">✦</span><span class="art-tile art-tile-two">↗</span>
+      <span class="art-label">A little better, every day.</span>
+    </div>
+    <div class="daily-invite">
+      <span class="daily-label">THE DAILY CHALLENGE <span>↗</span></span>
+      <h2>Build your momentum.</h2>
+      <p>3 games. One focused session.<br>Complete the circuit for +150 XP.</p>
+      <button class="primary-action" onclick="openCircuitModal()">Explore daily circuit <span aria-hidden="true">→</span></button>
+    </div>
+  </section>
+
+  <section class="game-library" aria-label="Choose your game">
+    <div class="section-heading"><h2>Your playground</h2><span>6 ways to challenge yourself</span></div>
+    <nav class="game-picker" aria-label="Brain games">
+      <button id="tab-number-rush" class="game-tab-btn active" onclick="switchGame('number-rush')" aria-pressed="true" aria-controls="game-number-rush"><span class="game-icon icon-mint" aria-hidden="true">#</span><span>Number Rush<small>Speed & precision</small></span><span class="game-arrow" aria-hidden="true">↗</span></button>
+      <button id="tab-memory-matrix" class="game-tab-btn" onclick="switchGame('memory-matrix')" aria-pressed="false" aria-controls="game-memory-matrix"><span class="game-icon icon-lilac" aria-hidden="true">▦</span><span>Memory Matrix<small>Remember the pattern</small></span><span class="game-arrow" aria-hidden="true">↗</span></button>
+      <button id="tab-color-clash" class="game-tab-btn" onclick="switchGame('color-clash')" aria-pressed="false" aria-controls="game-color-clash"><span class="game-icon icon-rose" aria-hidden="true">◐</span><span>Color Clash<small>Find your focus</small></span><span class="game-arrow" aria-hidden="true">↗</span></button>
+      <button id="tab-speed-math" class="game-tab-btn" onclick="switchGame('speed-math')" aria-pressed="false" aria-controls="game-speed-math"><span class="game-icon icon-peach" aria-hidden="true">±</span><span>Speed Math<small>Think on your feet</small></span><span class="game-arrow" aria-hidden="true">↗</span></button>
+      <button id="tab-sequence-recall" class="game-tab-btn" onclick="switchGame('sequence-recall')" aria-pressed="false" aria-controls="game-sequence-recall"><span class="game-icon icon-blue" aria-hidden="true">♫</span><span>Simon Recall<small>Listen. Repeat.</small></span><span class="game-arrow" aria-hidden="true">↗</span></button>
+      <button id="tab-flexi-switch" class="game-tab-btn" onclick="switchGame('flexi-switch')" aria-pressed="false" aria-controls="game-flexi-switch"><span class="game-icon icon-yellow" aria-hidden="true">⇄</span><span>Flexi Switch<small>Stay one step ahead</small></span><span class="game-arrow" aria-hidden="true">↗</span></button>
+    </nav>
+  </section>
+
+  <!-- Responsive training dashboard -->
+  <div class="training-layout w-full max-w-7xl mx-auto px-2 xxs:px-4 xl:px-8 py-2 sm:py-4 flex-1 flex flex-col xl:flex-row items-center xl:items-start justify-center xl:justify-between gap-4 sm:gap-6">
 
     <!-- ════ LEFT SIDEBAR PANEL ════ -->
     <aside class="hidden xl:flex flex-col w-72 shrink-0 gap-4">
@@ -689,10 +706,19 @@
     </aside>
 
     <!-- ════ CENTER STAGE (MAIN CONSOLE ARENA) ════ -->
-    <main class="w-full max-w-xl mx-auto flex-1 flex flex-col items-center justify-center gap-3">
+    <main id="playArea" tabindex="-1" class="play-area w-full max-w-xl mx-auto flex-1 flex flex-col items-center justify-center gap-3" aria-labelledby="gameTitle">
+      <div class="arena-heading">
+        <div><p class="eyebrow">LET'S PLAY</p><h2 id="gameTitle">Number Rush</h2></div>
+        <button class="restart-action" onclick="initCurrentGame()" title="Restart this game"><span aria-hidden="true">↻</span> Restart</button>
+      </div>
+      <p id="gameDescription" class="game-description">Tap the numbers in order. Find your flow.</p>
+      <details class="quick-guide">
+        <summary>How to play <span aria-hidden="true">+</span></summary>
+        <ul id="quickInstructions"></ul>
+      </details>
 
       <!-- Unified Console HUD Control Bar -->
-      <div class="w-full glass-card rounded-2xl p-2 xxs:p-3 sm:p-4 flex flex-col gap-2 sm:gap-3 border border-white/15 shadow-xl relative overflow-hidden">
+      <div class="game-hud w-full glass-card rounded-2xl p-2 xxs:p-3 sm:p-4 flex flex-col gap-2 sm:gap-3 border border-white/15 shadow-xl relative overflow-hidden">
         
         <!-- Circuit Workout Active Interactive HUD -->
         <div id="circuitBanner" class="hidden w-full glass-card border border-amber-400/50 bg-gradient-to-r from-amber-500/15 via-rose-500/15 to-purple-500/15 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 flex items-center justify-between text-xs font-bold shadow-lg">
@@ -977,7 +1003,7 @@
       
       <div class="mb-4">
         <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2 font-mono">
-          🎮 MINDFORGE VAULT
+          Find your next challenge
         </h2>
         <p class="text-xs text-slate-400 mt-0.5">Select a game to train memory, focus, math, and switching agility.</p>
       </div>
@@ -1046,7 +1072,7 @@
       <button onclick="closeHotkeyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold w-8 h-8 rounded-xl glass-card flex items-center justify-center border border-white/10">✕</button>
       
       <h2 class="text-xl font-black text-white mb-1 font-mono flex items-center gap-2">
-        ⌨️ KEYBOARD SHORTCUTS
+        Keyboard shortcuts
       </h2>
       <p class="text-xs text-slate-400 mb-4">Master MindForge controls using instant hotkeys.</p>
 
@@ -1091,7 +1117,7 @@
       </div>
 
       <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2 font-mono">
-        ⚡ DAILY SYNAPSE CIRCUIT
+        Your daily circuit
       </h2>
       <p class="text-xs text-slate-300 mt-1 mb-4 leading-relaxed">
         Calibrate 3 core cognitive domains back-to-back: Processing Speed, Mental Arithmetic, and Executive Task Switching. Complete all 3 to earn <span class="text-amber-300 font-bold">+150 XP Bonus</span> & keep your streak alive!
@@ -2155,6 +2181,7 @@
     const GAME_CONFIGS = {
       'number-rush': {
         name: 'Number Rush',
+        description: 'Tap the numbers in order. Find your flow.',
         targetLabel: 'Next Target',
         instructions: [
           '<span class="text-cyan-400 font-bold">①</span> Click numbers 1 → 25 in ascending order',
@@ -2166,6 +2193,7 @@
       },
       'memory-matrix': {
         name: 'Memory Matrix',
+        description: 'A moment to memorize. A challenge to remember.',
         targetLabel: 'Target Tiles',
         instructions: [
           '<span class="text-cyan-400 font-bold">①</span> Memorize illuminated grid tiles',
@@ -2176,6 +2204,7 @@
       },
       'color-clash': {
         name: 'Color Clash',
+        description: 'Trust the ink, not your instinct. Does the color match?',
         targetLabel: 'Current Streak',
         instructions: [
           '<span class="text-cyan-400 font-bold">①</span> Read the displayed color word',
@@ -2186,6 +2215,7 @@
       },
       'speed-math': {
         name: 'Speed Math',
+        description: 'Quick calculations. Clear thinking. Keep your streak alive.',
         targetLabel: 'Solved Rounds',
         instructions: [
           '<span class="text-cyan-400 font-bold">①</span> Solve rapid arithmetic equations',
@@ -2196,6 +2226,7 @@
       },
       'sequence-recall': {
         name: 'Simon Recall',
+        description: 'Catch the rhythm. Repeat the sequence.',
         targetLabel: 'Pattern Length',
         instructions: [
           '<span class="text-cyan-400 font-bold">①</span> Watch & listen to pad sequence',
@@ -2206,6 +2237,7 @@
       },
       'flexi-switch': {
         name: 'Flexi Switch',
+        description: 'New rule, next move. Stay one step ahead.',
         targetLabel: 'Correct Switches',
         instructions: [
           '<span class="text-cyan-400 font-bold">①</span> Executive task switching game',
@@ -2224,9 +2256,15 @@
 
       currentGameId = gameId;
 
-      document.querySelectorAll('.game-tab-btn').forEach(card => card.classList.remove('active'));
+      document.querySelectorAll('.game-tab-btn').forEach(card => {
+        card.classList.remove('active');
+        card.setAttribute('aria-pressed', 'false');
+      });
       const activeTab = document.getElementById('tab-' + gameId);
-      if (activeTab) activeTab.classList.add('active');
+      if (activeTab) {
+        activeTab.classList.add('active');
+        activeTab.setAttribute('aria-pressed', 'true');
+      }
 
       document.querySelectorAll('.game-view').forEach(v => v.classList.add('hidden'));
       const activeView = document.getElementById('game-' + gameId);
@@ -2234,6 +2272,9 @@
 
       const config = GAME_CONFIGS[gameId];
       targetLabel.textContent = config.targetLabel;
+      document.getElementById('gameTitle').textContent = config.name;
+      document.getElementById('gameDescription').textContent = config.description;
+      document.getElementById('quickInstructions').innerHTML = config.instructions.map(i => `<li>${i}</li>`).join('');
 
       const activeBadge = document.getElementById('activeGameBadge');
       const instList = document.getElementById('instructionsList');
@@ -3005,7 +3046,22 @@
       }
     }
 
+    // Existing card and setting actions must also work without a pointer.
+    document.querySelectorAll('#gameVaultModal [onclick^="switchGame"], #mobileSettingsMenu > [onclick]').forEach(control => {
+      control.setAttribute('role', 'button');
+      control.tabIndex = 0;
+      control.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
+          control.click();
+        }
+      });
+    });
+
     window.addEventListener('keydown', (e) => {
+      // Space/Enter on focused controls should activate that control, not a hotkey.
+      if (e.key !== 'Escape' && e.target.closest('button, a, summary, [role="button"], input, select, textarea')) return;
       if (e.code === 'Space') {
         if (!overlay.classList.contains('hidden')) {
           initCurrentGame();

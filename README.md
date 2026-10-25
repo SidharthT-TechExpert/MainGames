@@ -60,6 +60,23 @@ npm start
 ```
 Or open `index.html` directly in any web browser!
 
+### Interface and responsive checks
+
+The refreshed dashboard uses `design.css` for its visual system, layered over
+`style.css`. It includes a swipeable six-game picker, a Play now shortcut,
+per-game headings and instructions, a restart action, and the daily circuit entry.
+Desktop keeps the statistics beside the board; phones use a single-column layout
+with expandable instructions. Existing theme controls and saved progress remain.
+
+```bash
+npm test                  # Game layouts, touch, navigation and keyboard checks
+npm run audit:responsive  # 22 viewport layout audit
+```
+
+These browser checks use Puppeteer and its installed Chromium browser. To capture
+phone and laptop screenshots during `npm test`, set `SCREENSHOT_DIR` to an existing
+directory. Viewport emulation does not replace testing on physical phones.
+
 ---
 
 ## 🔊 Audio Engine

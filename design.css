@@ -1,0 +1,239 @@
+/* MindForge visual system. Layout and game mechanics remain in the base files. */
+:root {
+  color-scheme: dark;
+  --surface: #141c2a;
+  --surface-raised: #1b2536;
+  --text-muted: #a3adc2;
+  --line: #ffffff12;
+}
+html[data-theme="cyan"] {
+  --bg-main: #0c111c;
+  --accent-color: #a3edd2;
+  --accent-secondary: #79cdb5;
+  --accent-glow: #a3edd214;
+  --accent-glow-strong: #a3edd238;
+  --card-bg: #141c2a;
+  --card-border: #ffffff12;
+}
+body.mindforge-app {
+  background: radial-gradient(ellipse at 12% 0%, #28334d30, transparent 48%), var(--bg-main);
+  justify-content: flex-start;
+  color: #f1f4fa;
+}
+.mindforge-app .glass-card,
+.mindforge-app .glass-card-glow {
+  background: var(--card-bg);
+  border-color: var(--line);
+  box-shadow: 0 8px 24px #0000000d;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.mindforge-app #particles { display: none; }
+.mindforge-app .text-cyan-300,
+.mindforge-app .text-cyan-400 { color: var(--accent-color); }
+.mindforge-app .text-slate-400 { color: var(--text-muted); }
+.mindforge-app button { transition: background-color .15s, border-color .15s, color .15s, transform .15s; }
+.mindforge-app :is(button, a, summary):focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
+}
+.skip-link { position: fixed; top: -80px; left: 16px; z-index: 100; padding: 12px 20px; background: var(--accent-color); color: #0c111c; border-radius: 12px; }
+.skip-link:focus { top: 12px; }
+.mindforge-app .app-header {
+  padding: 14px max(24px, calc((100vw - 1232px) / 2));
+  background: #0c111cf5;
+  border-width: 0 0 1px;
+  min-height: 76px;
+  gap: 16px;
+}
+.brand { min-height: 44px; }
+.mindforge-app .brand-mark { background: var(--accent-color); color: #111b26; box-shadow: none; width: 38px; height: 38px; border-radius: 12px; }
+.mindforge-app .brand-name { font-size: 22px; letter-spacing: -.9px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.brand-dot { color: var(--accent-color); }
+.brand-edition { font-size: 8px; letter-spacing: 1.6px; color: var(--text-muted); margin-left: 10px; }
+.header-caption { color: var(--text-muted); font-size: 11px; }
+.mindforge-app #circuitHeaderBtnDesk,
+.mindforge-app #circuitHeaderBtnMob { background: var(--accent-color); color: #12251f; border: 0; box-shadow: none; }
+.mindforge-app #circuitHeaderBtnMob { width: auto; min-width: 44px; padding-inline: 10px !important; }
+.mindforge-app .app-header [title="Brain XP"] { min-height: 36px; background: #bda8f410; color: #d3c1ff; border-color: #bda8f429; }
+.welcome-banner,
+.game-library { width: calc(100% - 48px); max-width: 1232px; margin-inline: auto; }
+.welcome-banner {
+  display: grid;
+  grid-template-columns: 1.1fr .8fr .85fr;
+  align-items: center;
+  gap: 24px;
+  margin-top: 30px;
+  padding: 28px 34px;
+  background: linear-gradient(110deg, #1c2841 0%, #192338 45%, #20263a 100%);
+  border: 1px solid #ffffff0d;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.eyebrow { font-size: 9px; letter-spacing: 1.8px; font-weight: 800; color: var(--text-muted); }
+.welcome-copy .eyebrow { color: #c3cbe0; display: flex; gap: 8px; align-items: center; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-color); box-shadow: 0 0 0 4px #a3edd211; flex: 0 0 auto; }
+.welcome-copy h1 { font-size: clamp(28px, 3.3vw, 42px); line-height: 1.12; font-weight: 800; letter-spacing: -1.8px; margin: 14px 0 10px; }
+.welcome-copy h1 > span { color: var(--accent-color); }
+.welcome-description { font-size: 11px; color: #b0bbd0; max-width: 300px; line-height: 1.8; }
+.play-link { display: inline-flex; align-items: center; min-height: 44px; gap: 22px; margin-top: 6px; font-size: 11px; font-weight: 800; color: var(--accent-color); }
+.play-link:hover { color: #fff; }
+.daily-invite { border-left: 1px solid #ffffff12; padding-left: 28px; }
+.daily-label { display: flex; justify-content: space-between; color: #cabbef; letter-spacing: 1.6px; font-size: 9px; font-weight: 800; }
+.daily-label > span { font-size: 16px; }
+.daily-invite h2 { font-size: 17px; font-weight: 700; letter-spacing: -.5px; margin: 10px 0 6px; }
+.daily-invite p { font-size: 11px; line-height: 1.8; color: #b0bbd0; }
+.primary-action { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #c6b5f4; color: #211932; border-radius: 11px; min-height: 44px; padding: 10px 16px; font-size: 11px; font-weight: 800; margin-top: 16px; width: 100%; }
+.primary-action:hover { background: #d7c9fa; }
+.mind-art { height: 175px; position: relative; display: grid; place-items: center; }
+.orbit { border: 1px solid #a3edd229; border-radius: 50%; position: absolute; width: 180px; height: 120px; transform: rotate(-35deg); }
+.orbit-two { width: 210px; height: 145px; transform: rotate(35deg); border-color: #c6b5f426; }
+.art-core { font-size: 66px; line-height: 1; font-weight: 800; letter-spacing: -9px; width: 100px; height: 100px; display: grid; place-content: center; grid-auto-flow: column; background: linear-gradient(145deg, #3d4963, #26334b); border: 1px solid #ffffff26; border-radius: 28px; transform: rotate(-10deg); box-shadow: 10px 15px 30px #00000030, inset 0 1px #ffffff20; }
+.art-core span { color: var(--accent-color); }
+.art-tile { position: absolute; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 23px; color: #1b2536; box-shadow: 0 8px 24px #0003; }
+.art-tile-one { top: 5px; right: 24px; background: #c6b5f4; transform: rotate(14deg); }
+.art-tile-two { bottom: 22px; left: 14px; background: #a3edd2; transform: rotate(-14deg); }
+.art-label { position: absolute; bottom: -2px; font-size: 9px; letter-spacing: .7px; color: #a8b4cb; }
+.game-library { margin-top: 24px; margin-bottom: 24px; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.section-heading h2 { font-size: 14px; font-weight: 800; letter-spacing: -.3px; }
+.section-heading > span { color: var(--text-muted); font-size: 10px; }
+.game-picker { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 9px; padding: 4px; margin: -4px; }
+.game-picker .game-tab-btn { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 14px 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--card-bg); text-align: left; color: #e0e5ef; font-size: 10px; font-weight: 800; box-shadow: none; }
+.game-picker .game-tab-btn.active { border-color: #a3edd25c; background: linear-gradient(120deg, #a3edd213, #141c2a); color: var(--accent-color); }
+.game-picker small { display: block; margin-top: 5px; font-size: 8px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+.game-icon { flex: 0 0 30px; width: 30px; height: 34px; display: grid; place-items: center; font-size: 24px; font-weight: 600; border-radius: 9px; font-family: 'Space Grotesk', sans-serif; }
+.icon-mint { color: #a3edd2; background: #a3edd215; }
+.icon-lilac { color: #c6b5f4; background: #c6b5f415; }
+.icon-rose { color: #f2a6ba; background: #f2a6ba15; }
+.icon-peach { color: #f1be9b; background: #f1be9b15; }
+.icon-blue { color: #9dc4f6; background: #9dc4f615; }
+.icon-yellow { color: #e4d394; background: #e4d39415; }
+.game-arrow { margin-left: auto; color: #71819c; font-size: 13px; }
+
+/* The arena is the focal point; analytics stay quiet at its sides. */
+.mindforge-app .training-layout { max-width: 1280px; padding: 0 24px 32px; gap: 24px; flex: 0 0 auto; align-items: flex-start; }
+.training-layout > aside { width: 248px; gap: 16px; }
+.training-layout > aside > .glass-card { border-radius: 18px; padding: 20px; border-width: 1px; }
+.training-layout > aside > .glass-card:first-child { background: linear-gradient(145deg, #1d2939, var(--card-bg)); }
+.training-layout aside h3 { font-size: 10px; letter-spacing: 1.1px; color: #c0cadd; margin-bottom: 16px; }
+.training-layout aside h3 > span:first-child { white-space: nowrap; }
+.training-layout #activeGameBadge { font-size: 8px; padding: 4px 6px; letter-spacing: 0; }
+.training-layout aside .glass-card .glass-card { background: #ffffff04; box-shadow: none; border-color: #ffffff06; }
+.training-layout #instructionsList { font-size: 11px; line-height: 1.85; color: #b5bfd2; }
+.mindforge-app .play-area { min-width: 0; justify-content: flex-start; gap: 14px; scroll-margin-top: 96px; }
+.arena-heading { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; }
+.arena-heading h2 { font-size: 23px; font-weight: 800; letter-spacing: -.8px; margin-top: 4px; }
+.arena-heading .eyebrow { font-size: 8px; letter-spacing: 1.4px; color: var(--accent-color); }
+.restart-action { min-height: 44px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--card-bg); color: #bec9dc; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.restart-action > span { font-size: 20px; }
+.game-description { width: 100%; color: var(--text-muted); font-size: 11px; margin-top: -8px; }
+.quick-guide { display: none; width: 100%; background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; font-size: 11px; }
+.quick-guide summary { min-height: 44px; padding: 12px 14px; cursor: pointer; font-weight: 700; color: #bec9dc; }
+.quick-guide summary > span { float: right; font-size: 14px; }
+.quick-guide[open] summary > span { transform: rotate(45deg); }
+.quick-guide ul { padding: 0 14px 14px; line-height: 1.8; color: #bac4d8; }
+.quick-guide li + li { margin-top: 6px; }
+.mindforge-app .game-hud { border-radius: 18px; padding: 16px; gap: 14px; }
+.game-hud > .w-full.flex { padding-bottom: 4px; }
+.game-hud #score,
+.game-hud #nextNum { font-size: 28px; letter-spacing: -1px; }
+.game-hud #eqVisualizer { display: none; }
+.game-hud #timerStatusText { color: var(--text-muted); font-weight: 500; }
+.mindforge-app #diffBox .diff-btn { font-size: 10px !important; color: #aab6cb; background: #ffffff05; border-color: #ffffff0a; box-shadow: none; }
+.mindforge-app #diffBox .diff-btn.active { color: var(--accent-color); background: #a3edd213; border-color: #a3edd240; }
+.mindforge-app #gridModeBox button { min-width: 44px; font-size: 10px; padding-inline: 10px; }
+.mindforge-app #progressBar,
+.mindforge-app #userXpBar,
+.mindforge-app #userXpBarMob { background: var(--accent-color); box-shadow: none; }
+.mindforge-app #boardArena { border-radius: 20px; padding: 14px; border-color: #ffffff14; background: #121b29; box-shadow: 0 16px 40px #0000001f; }
+.mindforge-app .cell { border-radius: 11px; background: #202c40; border-color: #ffffff09; box-shadow: inset 0 1px 0 #ffffff05; font-family: 'Space Grotesk', sans-serif; font-size: 20px; color: #e2e9f7; will-change: auto; }
+.mindforge-app .cell.next-hint { background: #a3edd21c !important; border-color: var(--accent-color) !important; box-shadow: inset 0 0 0 1px var(--accent-color) !important; color: var(--accent-color); animation: none; }
+.mindforge-app .cell.correct { background: #24483e !important; color: #a3edd2 !important; border-color: #a3edd230 !important; box-shadow: none !important; }
+.mindforge-app .cell.active-pattern { background: #7d67b8 !important; border-color: #c6b5f4 !important; box-shadow: none !important; }
+.mindforge-app .combo-badge { background: #d8b2ee; color: #30213c; box-shadow: none; }
+.mindforge-app .game-view > .glass-card-glow { background: #1c283d; border-color: #ffffff12; box-shadow: none; }
+.mindforge-app #mathOptions button { background: #202c40; border-color: #ffffff10; }
+.mindforge-app .simon-pad { box-shadow: none; border-radius: 18px; }
+.mindforge-app #message { font-size: 11px; }
+.mindforge-app footer { border: 0; padding-bottom: 24px; }
+.mindforge-app footer > .grid > .glass-card { border-radius: 16px; padding: 14px; }
+.mindforge-app #mobileSettingsMenu,
+.mindforge-app #themeMenu { background: #1c2638; border-color: #ffffff1c; box-shadow: 0 16px 48px #0008; }
+.mindforge-app #mobileSettingsMenu > [onclick] { min-height: 44px; }
+.mindforge-app :is(#gameVaultModal, #hotkeyModal, #circuitModal, #circuitStageModal, #circuitVictoryModal, #overlay) > .glass-card {
+  background: #172131; border-color: #ffffff20; border-radius: 24px;
+  max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain;
+}
+.mindforge-app #gameVaultModal h2,
+.mindforge-app #hotkeyModal h2 { padding-right: 36px; font-size: 20px; letter-spacing: -.7px; }
+.mindforge-app #gameVaultModal [onclick^="switchGame"] { background: #202c40; text-align: left; border-color: #ffffff0d; border-radius: 16px; }
+.mindforge-app [onclick^="close"] { min-width: 44px; min-height: 44px; }
+.mindforge-app #toast { opacity: 0 !important; background: #24364a; border-color: #a3edd240; border-radius: 14px; }
+.mindforge-app #toast:not(.opacity-0) { opacity: 1 !important; }
+
+@media (hover: hover) and (pointer: fine) {
+  .game-picker .game-tab-btn:hover { background: #253448; border-color: #ffffff35; transform: translateY(-2px); }
+  .restart-action:hover { background: #26344a; color: white; }
+  .mindforge-app .cell:hover:not(.used) { background: #2b3c55; border-color: #a3edd26b; box-shadow: none; transform: translateY(-1px); }
+}
+
+/* Smaller screens keep the same hierarchy without squeezing the controls. */
+@media (max-width: 1279px) {
+  .header-caption { display: none; }
+  .mindforge-app .training-layout { align-items: center; }
+  .quick-guide { display: block; }
+  .game-picker { grid-template-columns: repeat(6, minmax(166px, 1fr)); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding-bottom: 10px; }
+  .game-picker button { scroll-snap-align: start; }
+  .welcome-banner { grid-template-columns: 1fr .65fr 1fr; gap: 12px; padding: 24px; }
+  .mind-art { transform: scale(.85); }
+}
+@media (max-width: 767px) {
+  .mindforge-app .app-header { min-height: 64px; padding: 8px 16px; gap: 8px; }
+  .brand-edition { display: none; }
+  .mindforge-app .brand-name { font-size: 19px; }
+  .welcome-banner, .game-library { width: calc(100% - 32px); }
+  .welcome-banner { grid-template-columns: 1fr auto; margin-top: 16px; padding: 22px; border-radius: 20px; }
+  .welcome-copy h1 { font-size: 32px; margin-top: 12px; }
+  .welcome-description { font-size: 10px; max-width: 230px; }
+  .welcome-copy .eyebrow { font-size: 8px; letter-spacing: 1px; }
+  .mind-art { width: 150px; transform: scale(.7); margin: -20px; }
+  .daily-invite { display: none; }
+  .game-library { margin-block: 20px; }
+  .game-picker { grid-template-columns: repeat(6, 168px); }
+  .section-heading > span { font-size: 9px; }
+  .mindforge-app .training-layout { padding-inline: 16px; }
+  .arena-heading h2 { font-size: 22px; }
+  .mindforge-app .game-hud { padding: 12px; }
+  .mindforge-app #boardArena { padding: 10px; }
+}
+@media (max-width: 399px) {
+  .mindforge-app .app-header { padding-inline: 8px; gap: 4px; }
+  .mindforge-app .brand-name { font-size: 16px; }
+  .mindforge-app .brand-mark { width: 28px; height: 32px; border-radius: 9px; }
+  .app-header [title="Brain XP"] { display: none; }
+  .welcome-banner, .game-library { width: calc(100% - 16px); }
+  .welcome-banner { padding: 18px; }
+  .welcome-copy h1 { font-size: 29px; }
+  .welcome-description { max-width: 200px; }
+  .mind-art { display: none; }
+  .mindforge-app .training-layout { padding-inline: 8px; }
+  .section-heading > span { display: none; }
+}
+@media (max-width: 319px) {
+  .welcome-banner { display: none; }
+  .welcome-copy h1 { font-size: 26px; }
+  .arena-heading h2 { font-size: 18px; }
+  .restart-action { padding-inline: 8px; }
+  .mindforge-app .cell { font-size: 14px !important; }
+  .mindforge-app .game-hud { padding: 8px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .welcome-banner { display: none; }
+  .mindforge-app .app-header { position: relative; }
+  .game-library { margin-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mindforge-app *, .mindforge-app *::before, .mindforge-app *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

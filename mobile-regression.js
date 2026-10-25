@@ -55,13 +55,18 @@ async function checkLayout(page, touch) {
       }
     }
     if (touch) {
-      for (const el of document.querySelectorAll('header button, #diffBox button, #gridModeBox button')) {
+      for (const el of document.querySelectorAll('header button, #diffBox button, #gridModeBox button, .restart-action')) {
         const r = el.getBoundingClientRect();
         if (!r.width || !r.height) continue;
         if (r.width < 43.5 || r.height < 43.5) issues.push(`small control: ${el.id || el.textContent.trim()}`);
         if (r.left < -1 || r.right > innerWidth + 1) issues.push('header/control outside viewport');
       }
     }
+    const selected = document.querySelector('.game-tab-btn[aria-pressed="true"]');
+    if (!selected || document.querySelectorAll('.game-tab-btn[aria-pressed="true"]').length !== 1) issues.push('game picker selection out of sync');
+    if (selected && selected.getAttribute('aria-controls') !== document.querySelector('.game-view:not(.hidden)').id) issues.push('game picker points to wrong game');
+    if (document.getElementById('gameTitle').textContent !== GAME_CONFIGS[currentGameId].name) issues.push('game heading out of sync');
+    if (!document.getElementById('quickInstructions').textContent.trim()) issues.push('game instructions missing');
     return [...new Set(issues)];
   }, touch);
 }
@@ -96,6 +101,10 @@ async function main() {
       await test(`six games + 6x6 layout: ${device.name}`, async () => {
         const { page, errors } = await load(browser, device);
         try {
+          if (process.env.SCREENSHOT_DIR && ['iPhone-sized', 'laptop'].includes(device.name)) {
+            await delay(650);
+            await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `mindforge-${device.name}.png`), fullPage: true });
+          }
           const issues = [];
           for (const game of games) {
             await page.evaluate(id => switchGame(id), game);
@@ -117,6 +126,42 @@ async function main() {
         await checkTouchInteractions(page);
         assert.deepEqual(errors, []);
         assert.deepEqual(await checkLayout(page, true), []);
+      } finally { await page.close(); }
+    });
+    await test('mobile navigation, instructions and restart', async () => {
+      const { page, errors } = await load(browser, devices[2], true);
+      try {
+        await page.tap('.play-link');
+        assert.equal(await page.$eval('#score', el => el.textContent), '0');
+        assert.ok(await page.$eval('#playArea', el => el.getBoundingClientRect().top < 150), 'Play now should bring the game into view');
+        await page.tap('#tab-flexi-switch');
+        assert.equal(await page.$eval('#gameTitle', el => el.textContent), 'Flexi Switch');
+        await page.tap('.quick-guide summary');
+        assert.equal(await page.$eval('.quick-guide', el => el.open), true);
+        assert.match(await page.$eval('#quickInstructions', el => el.textContent), /EVEN\/ODD/);
+        await page.tap('#tab-number-rush');
+        await page.tap('#game-number-rush [data-num="1"]');
+        assert.equal(await page.$eval('#score', el => el.textContent), '10');
+        await page.tap('.restart-action');
+        assert.equal(await page.$eval('#score', el => el.textContent), '0');
+        assert.equal(await page.$eval('#nextNum', el => el.textContent), '1');
+        assert.equal(await page.$eval('#tab-number-rush', el => el.getAttribute('aria-pressed')), 'true');
+        assert.deepEqual(errors, []);
+      } finally { await page.close(); }
+    });
+    await test('desktop daily challenge entry and keyboard game selection', async () => {
+      const { page, errors } = await load(browser, devices[8], true);
+      try {
+        await page.click('.primary-action');
+        assert.equal(await page.$eval('#circuitModal', el => el.classList.contains('hidden')), false);
+        await page.keyboard.press('Escape');
+        assert.equal(await page.$eval('#circuitModal', el => el.classList.contains('hidden')), true);
+        await page.focus('#tab-memory-matrix');
+        await page.keyboard.press('Enter');
+        assert.equal(await page.$eval('#gameTitle', el => el.textContent), 'Memory Matrix');
+        await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+        assert.equal(await page.$eval('.cell', el => getComputedStyle(el).animationName), 'none');
+        assert.deepEqual(errors, []);
       } finally { await page.close(); }
     });
   } finally { await browser.close(); }
