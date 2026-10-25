@@ -5,7 +5,9 @@
   "main": "index.html",
   "scripts": {
     "start": "npx serve .",
-    "dev": "npx serve ."
+    "dev": "npx serve .",
+    "test": "node mobile-regression.js",
+    "audit:responsive": "node responsive-audit.js"
   },
   "keywords": [
     "brain-games",
